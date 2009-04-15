@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.co.opsb</groupId>
-	<artifactId>active-tables</artifactId>
+	<groupId>com.googlecode</groupId>
+	<artifactId>active-collections</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>active_tables</name>
+	<name>active-collections</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<tapestry.version>5.0.18</tapestry.version>
@@ -24,6 +24,13 @@
                 </configuration>
             </plugin>
        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
     </build>
 	<dependencies>
 		<dependency>
@@ -110,48 +117,11 @@
     <!-- Spring start -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<!--
-			dependencies bringing in spring-security-acl and spring-security-core
-		-->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core-tiger</artifactId>
-			<version>${spring.security.version}</version>
-      <!-- Bringing in Spring 2.0.8 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-support</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-taglibs</artifactId>
-			<version>${spring.security.version}</version>
-      <!-- Bringing in Spring 2.0.8 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-support</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
     <!-- Spring end -->
+    
 		<dependency>
 		    <groupId>hsqldb</groupId>
 		    <artifactId>hsqldb</artifactId>
@@ -170,4 +140,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>googlecode</id>
+            <url>svn:https://active-collections.googlecode.com/svn/repo</url>
+        </repository>
+    </distributionManagement>
+	
 </project>
