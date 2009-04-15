@@ -17,28 +17,33 @@ import javax.persistence.Query;
 
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(propagation=Propagation.REQUIRED)
 public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 
-	private final Field idField;
+	private Field idField;
 	
-	private final String deleteQuery;
+	private String deleteQuery;
 	
-	private final String containsAllQuery;
+	private String containsAllQuery;
 	
-	private final String sizeQuery;
+	private String sizeQuery;
 	
-	private final String retainAllQuery;
+	private String retainAllQuery;
 	
-	private final String getAllQuery;
+	private String getAllQuery;
 	
-	private final Class<T> clazz;
+	private Class<T> clazz;
 	
 	protected EntityManagerFactory entityManagerFactory;
 
-	private final String conditionsClause;
+	private String conditionsClause;
 	
 	private List<Object> params;
+	
+	protected ActiveSet() {}
 	
 	public ActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory, String conditionsClause, List<Object> params) {
 		
@@ -93,7 +98,7 @@ public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 		return getId(entity) != null;
 	}
 	
-	public boolean add(final T entity) {
+	public boolean add(T entity) {
 		if (isPersisted(entity)) {
 			getJpaTemplate().merge(entity);
 		}
