@@ -15,6 +15,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.spring.annotation.SpringApplicationContext;
@@ -22,6 +23,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.googlecode.activecollections.ActiveSet;
 
+@RunWith(Enclosed.class)
 public class ActiveSetSpec {
 
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
