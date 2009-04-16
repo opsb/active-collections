@@ -13,10 +13,11 @@ public class Person {
 	@GeneratedValue
 	private Long id;
 
+	@SuppressWarnings("unused")
 	private String name;
 
-	private Person() {
-	}
+	@SuppressWarnings("unused")
+	private Person() {} // Required by JPA
 
 	public Person(String name) {
 		this.name = name;
