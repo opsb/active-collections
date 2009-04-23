@@ -22,6 +22,8 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.googlecode.activecollections.ActiveSet;
+import com.googlecode.activecollections.People;
+import com.googlecode.activecollections.Person;
 
 @RunWith(Enclosed.class)
 public class ActiveSetSpec {
@@ -164,6 +166,15 @@ public class ActiveSetSpec {
 		public void canClearAll() {
 			people.clear();
 			assertTrue(people.isEmpty());
+		}
+		
+		@Test
+		public void shouldFindPersonUsingId() {
+			
+			Person targetPerson = people.iterator().next();
+			Long id = targetPerson.getId();
+			
+			assertThat(people.find(id), equalTo(targetPerson));
 		}
 
 	}

@@ -252,5 +252,9 @@ public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 		
 		return new ActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause + " " + conditionsClause, allParams );
 	}
+
+	public T find(Long id) {
+		return getJpaTemplate().find(clazz, id);
+	}
 	
 }
