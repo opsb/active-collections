@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED)
 public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 
+	private String referenceName;
+	
 	private Field idField;
 	
 	private String deleteQuery;
@@ -56,7 +58,7 @@ public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 		this.params = params;
 		
 		String entityName = clazz.getSimpleName();
-		String referenceName = clazz.getSimpleName().toLowerCase();
+		referenceName = clazz.getSimpleName().toLowerCase();
 		
 		String whereClause = conditionsClause.length() == 0 ? "" : " where " + conditionsClause;
 		String andClause = conditionsClause.length() == 0 ? "" : " and " + conditionsClause;
@@ -254,7 +256,19 @@ public class ActiveSet<T> extends JpaDaoSupport implements Set<T>{
 	}
 
 	public T find(Long id) {
+		
+		T finding = findOrNull(id);
+		if (finding == null) throw new IllegalArgumentException("No " + referenceName + " with id " + id);
+		
+		return finding;
+	}
+
+	public T findOrNull(Long id) {
 		return getJpaTemplate().find(clazz, id);
+	}
+
+	public void save(T entity) {
+		add(entity);
 	}
 	
 }

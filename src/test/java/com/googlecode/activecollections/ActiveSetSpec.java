@@ -3,6 +3,7 @@ package com.googlecode.activecollections;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -107,6 +108,7 @@ public class ActiveSetSpec {
 	@SpringApplicationContext("spring-context.xml")
 	public static class WithOnePersonSpec {
 
+		private static final Long INVALID_ID = 99L;
 		private final Person PAUL = new Person("Paul");
 		private final Person PETER = new Person("Peter");
 
@@ -175,6 +177,22 @@ public class ActiveSetSpec {
 			Long id = targetPerson.getId();
 			
 			assertThat(people.find(id), equalTo(targetPerson));
+		}
+		
+		@Test(expected=IllegalArgumentException.class)
+		public void shouldThrowExceptionWhenNoPersonIsFoundForAnId() {
+			people.find(INVALID_ID);
+		}
+		
+		@Test
+		public void shouldReturnNullIfRequestedInsteadOfExceptionForUnfoundPerson() {
+			assertNull(people.findOrNull(INVALID_ID));
+		}
+		
+		@Test
+		public void shouldAllowSaveAsAliasForAdd() {
+			people.save(PAUL);
+			assertThat(people.size(), equalTo(2));
 		}
 
 	}
