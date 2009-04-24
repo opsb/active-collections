@@ -12,16 +12,16 @@
 		<spring.security.version>2.0.4</spring.security.version>
 	</properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin </artifactId>
 				<version>2.3</version>
@@ -31,16 +31,22 @@
 						<include>**/*Test.java</include>
 					</includes>
 				</configuration>
-			</plugin>            
-       </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.8</version>
-            </extension>
-        </extensions>
-    </build>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.jvnet.wagon-svn</groupId>
+				<artifactId>wagon-svn</artifactId>
+				<version>1.8</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+
+		</extensions>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -64,7 +70,7 @@
 			<artifactId>unitils</artifactId>
 			<version>1.1</version>
 		</dependency>
-    <!-- Persistence -->
+		<!-- Persistence -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
@@ -121,22 +127,22 @@
 			<artifactId>persistence-api</artifactId>
 			<version>1.0</version>
 		</dependency>
-    <!-- Persistence End -->
-    
-    <!-- Spring start -->
+		<!-- Persistence End -->
+
+		<!-- Spring start -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-    <!-- Spring end -->
-    
+		<!-- Spring end -->
+
 		<dependency>
-		    <groupId>hsqldb</groupId>
-		    <artifactId>hsqldb</artifactId>
-		    <version>1.8.0.7</version>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.7</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
@@ -149,19 +155,20 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
-    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>googlecode</id>
-            <url>svn:https://active-collections.googlecode.com/svn/repo</url>
-        </repository>
-    </distributionManagement>
+
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>googlecode</id>
+			<url>svn:https://active-collections.googlecode.com/svn/repo</url>
+		</repository>
+	</distributionManagement>
+
 
 	<scm>
 		<connection>scm:svn:https://active-collections.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/trunk</developerConnection>
 		<url>http://active-collections.googlecode.com/svn</url>
 	</scm>
-	
+
 </project>
