@@ -158,5 +158,11 @@
             <url>svn:https://active-collections.googlecode.com/svn/repo</url>
         </repository>
     </distributionManagement>
+
+	<scm>
+		<connection>scm:svn:https://active-collections.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/trunk</developerConnection>
+		<url>http://active-collections.googlecode.com/svn</url>
+	</scm>
 	
 </project>
