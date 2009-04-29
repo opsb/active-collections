@@ -1,5 +1,12 @@
 package com.googlecode.activecollections;
 
+import static com.googlecode.activecollections.PersonStubs.gabrial;
+import static com.googlecode.activecollections.PersonStubs.james;
+import static com.googlecode.activecollections.PersonStubs.jim;
+import static com.googlecode.activecollections.PersonStubs.mark;
+import static com.googlecode.activecollections.PersonStubs.paul;
+import static com.googlecode.activecollections.PersonStubs.pearson;
+import static com.googlecode.activecollections.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
@@ -7,7 +14,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,11 +27,6 @@ import org.junit.runner.RunWith;
 import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
-
-import com.googlecode.activecollections.ActiveSet;
-import com.googlecode.activecollections.JpaPeople;
-import com.googlecode.activecollections.Person;
-import static com.googlecode.activecollections.PersonStubs.*;
 
 @RunWith(Enclosed.class)
 public class JpaActiveSetSpec {
