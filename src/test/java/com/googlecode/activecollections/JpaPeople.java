@@ -3,9 +3,9 @@ package com.googlecode.activecollections;
 import javax.persistence.EntityManagerFactory;
 
 
-public class People extends JpaActiveSet<Person> {
+public class JpaPeople extends JpaActiveSet<Person> {
 	
-	public People(EntityManagerFactory entityManagerFactory) {
+	public JpaPeople(EntityManagerFactory entityManagerFactory) {
 		super(Person.class, entityManagerFactory);
 	}
 

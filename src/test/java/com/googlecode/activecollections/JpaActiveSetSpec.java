@@ -23,7 +23,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.googlecode.activecollections.ActiveSet;
-import com.googlecode.activecollections.People;
+import com.googlecode.activecollections.JpaPeople;
 import com.googlecode.activecollections.Person;
 import static com.googlecode.activecollections.PersonStubs.*;
 
@@ -45,7 +45,7 @@ public class JpaActiveSetSpec {
 		@Before
 		public void context() {
 			
-			people = new People(entityManagerFactory);
+			people = new JpaPeople(entityManagerFactory);
 		}
 
 		@Test
@@ -120,7 +120,7 @@ public class JpaActiveSetSpec {
 
 		@Before
 		public void context() {
-			people = new People(entityManagerFactory);
+			people = new JpaPeople(entityManagerFactory);
 			people.add(PETER);
 		}
 
@@ -213,7 +213,7 @@ public class JpaActiveSetSpec {
 
 		@Before
 		public void context() {
-			people = new People(entityManagerFactory);
+			people = new JpaPeople(entityManagerFactory);
 			people.add(PETER);
 			people.add(PAUL);
 		}
@@ -302,7 +302,7 @@ public class JpaActiveSetSpec {
 		@Before
 		public void context() {
 			
-			people = new People(entityManagerFactory);
+			people = new JpaPeople(entityManagerFactory);
 			
 			people.add(jim);
 			people.add(paul);
@@ -337,8 +337,8 @@ public class JpaActiveSetSpec {
 			
 			Set<Person> people = new HashSet<Person>(filteredPeople);
 			
-			assertFalse(people.containsAll(Arrays.asList(jim, james)));
-			assertTrue(people.containsAll(Arrays.asList(paul, peter)));
+			assertFalse(people.containsAll(asList(jim, james)));
+			assertTrue(people.containsAll(asList(paul, peter)));
 		}
 		
 		@Test

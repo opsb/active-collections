@@ -1,6 +1,7 @@
 package com.googlecode.activecollections;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
+
 import java.util.HashSet;
 import java.util.Set;
 
