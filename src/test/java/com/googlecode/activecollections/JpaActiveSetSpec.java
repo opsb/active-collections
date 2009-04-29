@@ -25,16 +25,17 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import com.googlecode.activecollections.ActiveSet;
 import com.googlecode.activecollections.People;
 import com.googlecode.activecollections.Person;
+import static com.googlecode.activecollections.PersonStubs.*;
 
 @RunWith(Enclosed.class)
-public class ActiveSetSpec {
+public class JpaActiveSetSpec {
 
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
 	@SpringApplicationContext("spring-context.xml")
 	public static class EmptyPeopleSpec {
 
-		private final Person PAUL = new Person("Paul");
-		private final Person PETER = new Person("Peter");
+		private final Person PAUL = paul();
+		private final Person PETER = peter();
 
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
@@ -109,8 +110,8 @@ public class ActiveSetSpec {
 	public static class WithOnePersonSpec {
 
 		private static final Long INVALID_ID = 99L;
-		private final Person PAUL = new Person("Paul");
-		private final Person PETER = new Person("Peter");
+		private final Person PAUL = paul();
+		private final Person PETER = peter();
 
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
@@ -201,9 +202,9 @@ public class ActiveSetSpec {
 	@SpringApplicationContext("spring-context.xml")
 	public static class WithTwoPeopleSpec {
 
-		private final Person PAUL = new Person("Paul");
-		private final Person PETER = new Person("Peter");
-		private final Person MARK = new Person("Mark");
+		private final Person PAUL = paul();
+		private final Person PETER = peter();
+		private final Person MARK = mark();
 		
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
@@ -284,12 +285,12 @@ public class ActiveSetSpec {
 	@SpringApplicationContext("spring-context.xml")
 	public static class WithSeveralPeopleFilteredByNameLikeFoo {
 		
-		private Person jim = new Person("Jim");
-		private Person paul = new Person("Paul");
-		private Person peter = new Person("Peter");
-		private Person james = new Person("James");
-		private Person gabrial = new Person("Gabrial");
-		private Person pearson = new Person("Pearson");
+		private Person jim = jim();
+		private Person paul = paul();
+		private Person peter = peter();
+		private Person james = james();
+		private Person gabrial = gabrial();
+		private Person pearson = pearson();
 		
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
