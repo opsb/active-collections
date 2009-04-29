@@ -34,10 +34,15 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		return items.containsAll(c);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public boolean equals(Object o) {
-		return items.equals(o);
+		if (!(o instanceof Collection)) return false;
+		Collection<T> collection = (Collection)o;
+		return containsAll(collection);
 	}
 
+	@Override
 	public int hashCode() {
 		return items.hashCode();
 	}

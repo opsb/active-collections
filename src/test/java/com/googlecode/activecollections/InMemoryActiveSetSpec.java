@@ -6,6 +6,7 @@ import static com.googlecode.activecollections.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItemInArray;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
@@ -128,7 +130,7 @@ public class InMemoryActiveSetSpec {
 		
 	}
 	
-	public static class TwoPeople {
+	public static class WithTwoPeople {
 		
 		private Person person1 = paul();
 		private Person person2 = peter();
@@ -152,6 +154,19 @@ public class InMemoryActiveSetSpec {
 		public void shouldContainAllPeople() {
 			assertTrue(people.containsAll(allPeople));
 		}
+		
+		@Test
+		public void equalToAllPeople() {
+			assertTrue(people.equals(allPeople));
+		}
+		
+		@Test
+		public void shouldHaveConsistentHash() {
+			
+			assertThat(people.hashCode(), equalTo(people.hashCode()));
+			
+		}
+		
 	}
 	
 }
