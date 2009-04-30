@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(propagation=Propagation.REQUIRED)
-class JpaActiveSet<T> extends ActiveSet<T> {
+public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	private String referenceName;
 	
@@ -74,7 +74,7 @@ class JpaActiveSet<T> extends ActiveSet<T> {
 		retainAllQuery = "delete from " + entityName + " " + referenceName + " where " + referenceName + " not in (:entities)" + andClause;
 	}
 	
-	private JpaTemplate getJpaTemplate() {
+	protected JpaTemplate getJpaTemplate() {
 		return jpaDaoSupport.getJpaTemplate();
 	}
 	

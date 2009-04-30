@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
+
 public abstract class ActiveSet<T> implements Set<T> {
 
 	public static <T> ActiveSet<T> activeSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
@@ -28,5 +29,9 @@ public abstract class ActiveSet<T> implements Set<T> {
 	public abstract T findOrNull(Long id);
 	
 	public abstract void save(T entity);
+
+	public static <T>ActiveSet<T> empty() {
+		return activeSet(new HashSet<T>());
+	}
 	
 }
