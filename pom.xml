@@ -3,7 +3,7 @@
 	<groupId>com.googlecode</groupId>
 	<artifactId>active-collections</artifactId>
 	<packaging>jar</packaging>
-	<version>0.5</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>active-collections</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -168,8 +168,8 @@
 		</plugins>
 	</reporting>
 	<scm>
-		<connection>scm:svn:https://active-collections.googlecode.com/svn/tags/active-collections-0.5</connection>
-		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/tags/active-collections-0.5</developerConnection>
-		<url>http://active-collections.googlecode.com/svn/tags/active-collections-0.5</url>
+		<connection>scm:svn:https://active-collections.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/trunk</developerConnection>
+		<url>http://active-collections.googlecode.com/svn</url>
 	</scm>
 </project>
