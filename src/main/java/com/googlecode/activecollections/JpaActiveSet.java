@@ -46,10 +46,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	private List<Object> params;
 	
 	private JpaDaoSupport jpaDaoSupport;
+
+	private String orderClause;
 	
 	protected JpaActiveSet() {}
 	
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, List<Object> params) {
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, List<Object> params) {
 		
 		jpaDaoSupport = new JpaDaoSupport(){{
 			setEntityManagerFactory(entityManagerFactory);			
@@ -58,6 +60,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		this.entityManagerFactory = entityManagerFactory;
 		this.clazz = clazz;
 		this.conditionsClause = conditionsClause;
+		this.orderClause = orderClause;
 		this.idField = getIdField(clazz);
 		this.params = params;
 		
@@ -67,7 +70,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		String whereClause = conditionsClause.length() == 0 ? "" : " where " + conditionsClause;
 		String andClause = conditionsClause.length() == 0 ? "" : " and " + conditionsClause;
 		
-		getAllQuery = "from " + entityName + " " + referenceName + whereClause;
+		getAllQuery = "from " + entityName + " " + referenceName + whereClause + (orderClause.length() == 0 ? "" : " order by " + orderClause);
 		deleteQuery = "delete from " + entityName + " " + referenceName + whereClause;
 		containsAllQuery = "select count(" + referenceName + ") from " + entityName + " " + referenceName + " where " + referenceName + " in (:entities)" + andClause;
 		sizeQuery = "SELECT COUNT(" + entityName + ") FROM " + entityName + " " + referenceName + whereClause;
@@ -79,7 +82,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this( clazz, entityManagerFactory, "", new ArrayList<Object>() );
+		this( clazz, entityManagerFactory, "", "", new ArrayList<Object>() );
 	}
 
 	private Field getIdField(Class<T> type) {
@@ -260,7 +263,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		allParams.addAll(this.params);
 		allParams.addAll(Arrays.asList(params));
 		
-		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause + " " + conditionsClause, allParams );
+		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause + " " + conditionsClause, this.orderClause, allParams );
+	}
+
+	@Override
+	public ActiveSet<T> orderedBy(String orderClause) {
+		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause, orderClause, this.params );
 	}
 
 	public T find(Long id) {

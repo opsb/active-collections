@@ -13,7 +13,6 @@ public class Person {
 	@GeneratedValue
 	private Long id;
 
-	@SuppressWarnings("unused")
 	private String name;
 
 	@SuppressWarnings("unused")
@@ -25,6 +24,10 @@ public class Person {
 	
 	public Long getId() {
 		return id;
+	}
+	
+	public String toString() {
+		return name;
 	}
 
 }

@@ -33,5 +33,7 @@ public abstract class ActiveSet<T> implements Set<T> {
 	public static <T>ActiveSet<T> empty() {
 		return activeSet(new HashSet<T>());
 	}
+
+	public abstract ActiveSet<T> orderedBy(String orderClause);
 	
 }

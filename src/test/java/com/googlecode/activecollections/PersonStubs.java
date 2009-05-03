@@ -30,4 +30,8 @@ public class PersonStubs {
 		return new Person("Pearson");
 	}
 	
+	public static Person zack() {
+		return new Person("Zack");
+	}
+	
 }

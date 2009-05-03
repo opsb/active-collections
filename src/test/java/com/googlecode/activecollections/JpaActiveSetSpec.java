@@ -279,6 +279,18 @@ public class JpaActiveSetSpec {
 			assertTrue(people.contains(PAUL));
 		}
 		
+		
+		@Test
+		public void shouldBeAbleToOrder() {
+			assertThat(people.orderedBy("name"), OrderMatcher.orderedSameAs(asList(PAUL, PETER)));
+		}
+		
+
+		@Test
+		public void shouldBeAbleToOrderDescending() {
+			assertThat(people.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
+		}
+		
 
 	}
 	
@@ -396,6 +408,17 @@ public class JpaActiveSetSpec {
 			filteredPeople.clear();
 			assertTrue(people.contains(jim));
 			
+		}
+		
+		@Test
+		public void shouldBeAbleToOrder() {
+			assertThat(filteredPeople.orderedBy("name"), OrderMatcher.orderedSameAs(asList(paul, peter)));
+		}
+		
+
+		@Test
+		public void shouldBeAbleToOrderDescending() {
+			assertThat(filteredPeople.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(peter, paul)));
 		}
 		
 	}

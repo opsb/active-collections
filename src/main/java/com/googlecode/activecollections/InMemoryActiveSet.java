@@ -98,5 +98,10 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	public void save(T entity) {
 		add(entity);
 	}
+
+	@Override
+	public ActiveSet<T> orderedBy(String orderClause) {
+		throw new NotImplementedException();
+	}
 	
 }
