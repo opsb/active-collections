@@ -85,16 +85,20 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		this( clazz, entityManagerFactory, "", "", new ArrayList<Object>() );
 	}
 
+	@SuppressWarnings("unchecked")
 	private Field getIdField(Class<T> type) {
 		
-		for(Field field : type.getDeclaredFields()) {
-			for(Annotation annotation : field.getAnnotations()) {
-				if (annotation instanceof Id) {
-					field.setAccessible(true);
-					return field;
+		for(Class clazz = type; clazz.getSuperclass() != null; clazz = clazz.getSuperclass()) {
+			for(Field field : clazz.getDeclaredFields()) {
+				for(Annotation annotation : field.getAnnotations()) {
+					if (annotation instanceof Id) {
+						field.setAccessible(true);
+						return field;
+					}
 				}
 			}
 		}
+		
 		
 		throw new IllegalArgumentException("Entity must have a field marked with an Id annotation");
 	}
