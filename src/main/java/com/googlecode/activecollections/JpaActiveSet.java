@@ -261,6 +261,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 
+	@Override
 	public ActiveSet<T> where(String conditionsClause, Object ... params) {
 		
 		List<Object> allParams = new ArrayList<Object>();
@@ -275,6 +276,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause, orderClause, this.params );
 	}
 
+	@Override
 	public T find(Long id) {
 		
 		T finding = findOrNull(id);
@@ -283,10 +285,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return finding;
 	}
 
+	@Override
 	public T findOrNull(Long id) {
 		return getJpaTemplate().find(clazz, id);
 	}
 
+	@Override
 	public void save(T entity) {
 		add(entity);
 	}
