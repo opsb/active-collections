@@ -2,11 +2,9 @@ package com.googlecode.activecollections;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -123,8 +121,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	private String getSizeQuery() {
 		return "SELECT COUNT(" + getEntityName() + ") FROM " + getEntityName() + " " + getReferenceName() + getWhereClause();
 	}
-	
-
 	
 	protected JpaTemplate getJpaTemplate() {
 		return jpaDaoSupport.getJpaTemplate();

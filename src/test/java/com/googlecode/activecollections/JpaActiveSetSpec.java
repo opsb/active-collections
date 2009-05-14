@@ -292,7 +292,6 @@ public class JpaActiveSetSpec {
 		public void shouldBeAbleToOrderDescending() {
 			assertThat(people.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
 		}
-		
 
 	}
 	

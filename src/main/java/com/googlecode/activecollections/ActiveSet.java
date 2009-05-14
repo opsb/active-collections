@@ -40,5 +40,6 @@ public abstract class ActiveSet<T> implements Set<T> {
 	public abstract ActiveSet<T> orderedBy(String orderClause);
 
 	public abstract Integer pageSize();
+
 	
 }
