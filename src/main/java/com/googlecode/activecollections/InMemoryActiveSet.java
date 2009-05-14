@@ -2,6 +2,7 @@ package com.googlecode.activecollections;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -108,5 +109,11 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	public Integer pageSize() {
 		throw new NotImplementedException();
 	}
-	
+
+	@Override
+	public <E extends JpaActiveSet<T>> E where(String conditionsClause,
+			Map<String, Object> params) {
+		throw new NotImplementedException();
+	}
+
 }

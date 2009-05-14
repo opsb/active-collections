@@ -3,6 +3,7 @@ package com.googlecode.activecollections;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
@@ -23,6 +24,8 @@ public abstract class ActiveSet<T> implements Set<T> {
 	}
 	
 	public abstract <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params);
+	
+	public abstract <E extends JpaActiveSet<T>> E where(String conditionsClause, Map<String,Object> params);
 	
 	public abstract T find(Long id);
 	

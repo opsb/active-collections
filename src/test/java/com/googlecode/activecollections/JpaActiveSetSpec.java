@@ -312,7 +312,7 @@ public class JpaActiveSetSpec {
 		
 		private ActiveSet<Person> filteredPeople;
 		
-		private ActiveSet<Person> people;
+		private JpaPeople people;
 		
 		@Before
 		public void context() {
@@ -324,7 +324,7 @@ public class JpaActiveSetSpec {
 			people.add(peter);
 			people.add(james);
 			
-			this.filteredPeople = people.where("name like 'P%'");
+			this.filteredPeople = people.withNameLike("P%");
 		}
 		
 		@Test

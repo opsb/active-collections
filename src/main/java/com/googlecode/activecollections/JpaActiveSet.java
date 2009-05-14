@@ -5,8 +5,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -35,7 +38,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private String conditionsClause;
 	
-	private List<Object> params;
+	private Map<String,Object> params;
 	
 	private String orderClause;
 	
@@ -47,7 +50,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	protected JpaActiveSet() {}
 	
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, List<Object> params) {
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, Map<String,Object> params) {
 		
 		jpaDaoSupport = new JpaDaoSupport(){{
 			setEntityManagerFactory(entityManagerFactory);			
@@ -128,7 +131,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this( clazz, entityManagerFactory, "", "", new ArrayList<Object>() );
+		this( clazz, entityManagerFactory, "", "", new HashMap<String, Object>() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -195,8 +198,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private void addParamsTo(Query query) {
-		for(int i = 0; i < params.size(); i++) {
-			query.setParameter(i, params.get(i));
+		for(Map.Entry<String, Object> entry : params.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -259,16 +262,17 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getAllQuery());
-				for(int i = 0; i < params.size(); i++) {
-					query.setParameter(i, params.get(i));
-				}
+				addParamsTo(query);
+				addPagingTo(query);
 				
+				return query.getResultList();
+			}
+
+			private void addPagingTo(Query query) {
 				if (isPaged()) {
 					query.setFirstResult(page * pageSize);
 					query.setMaxResults(pageSize);
 				}
-				
-				return query.getResultList();
 			}
 			
 		});
@@ -328,10 +332,31 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@Override
 	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
+		StringBuilder clauseWithNamedParams = new StringBuilder();
+		Map<String,Object> namedParams = new HashMap<String, Object>();
+		if (params.length > 0) {
+			int fromIndex = 0;
+			int endIndex = 0;
+			for(Object param : params) {
+				endIndex = conditionsClause.indexOf('?', fromIndex);
+				clauseWithNamedParams.append(conditionsClause.substring(fromIndex, endIndex));
+				String uniqueName = uniqueName();
+				clauseWithNamedParams.append(":" + uniqueName);
+				namedParams.put(uniqueName, param);
+				fromIndex = endIndex + 1;
+			}
+			endIndex = conditionsClause.length();
+			clauseWithNamedParams.append(conditionsClause.substring(fromIndex, endIndex));
+		}
+		return where(clauseWithNamedParams.toString(), namedParams);
+	}
+	
+	@Override
+	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Map<String,Object> params) {
 		
-		List<Object> allParams = new ArrayList<Object>();
-		allParams.addAll(this.params);
-		allParams.addAll(Arrays.asList(params));
+		Map<String,Object> allParams = new HashMap<String,Object>();
+		allParams.putAll(this.params);
+		allParams.putAll(params);
 		
 		String combinedConditionsClause = this.conditionsClause + " " + conditionsClause;
 		
@@ -341,6 +366,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 		return copy;
 		
+	}
+	
+	private String uniqueName() {
+		return "param" + params.size();
 	}
 
 	@Override
