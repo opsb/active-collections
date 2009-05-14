@@ -103,5 +103,10 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	public ActiveSet<T> orderedBy(String orderClause) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public Integer pageSize() {
+		throw new NotImplementedException();
+	}
 	
 }

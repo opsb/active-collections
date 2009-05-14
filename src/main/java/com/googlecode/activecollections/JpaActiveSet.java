@@ -23,22 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation=Propagation.REQUIRED)
 public class JpaActiveSet<T> extends ActiveSet<T> {
 
-	private String referenceName;
-	
+	private static final Integer DEFAULT_PAGE_SIZE = 25;
+
+	private static final int FIRST = 0;
+
 	private Field idField;
-	
-	private String deleteQuery;
-	
-	private String containsAllQuery;
-	
-	private String sizeQuery;
-	
-	private String retainAllQuery;
-	
-	private String getAllQuery;
 	
 	private Class<T> clazz;
 
+	private Integer page;
+	
 	private String conditionsClause;
 	
 	private List<Object> params;
@@ -48,6 +42,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	protected EntityManagerFactory entityManagerFactory;
 	
 	private JpaDaoSupport jpaDaoSupport;
+
+	private Integer pageSize = DEFAULT_PAGE_SIZE;
 	
 	protected JpaActiveSet() {}
 	
@@ -57,30 +53,75 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			setEntityManagerFactory(entityManagerFactory);			
 		}};
 		this.entityManagerFactory = entityManagerFactory;
-
 		
-		buildMeta(clazz, conditionsClause, orderClause, params);
-	}
-
-	private void buildMeta(Class<T> clazz, String conditionsClause, String orderClause, List<Object> params) {
 		this.clazz = clazz;
 		this.conditionsClause = conditionsClause;
 		this.orderClause = orderClause;
 		this.idField = getIdField(clazz);
 		this.params = params;
-		
-		String entityName = clazz.getSimpleName();
-		referenceName = clazz.getSimpleName().toLowerCase();
-		
-		String whereClause = conditionsClause.length() == 0 ? "" : " where " + conditionsClause;
-		String andClause = conditionsClause.length() == 0 ? "" : " and " + conditionsClause;
-		
-		getAllQuery = "from " + entityName + " " + referenceName + whereClause + (orderClause.length() == 0 ? "" : " order by " + orderClause);
-		deleteQuery = "delete from " + entityName + " " + referenceName + whereClause;
-		containsAllQuery = "select count(" + referenceName + ") from " + entityName + " " + referenceName + " where " + referenceName + " in (:entities)" + andClause;
-		sizeQuery = "SELECT COUNT(" + entityName + ") FROM " + entityName + " " + referenceName + whereClause;
-		retainAllQuery = "delete from " + entityName + " " + referenceName + " where " + referenceName + " not in (:entities)" + andClause;
 	}
+
+	@SuppressWarnings("unchecked")
+	private <E extends JpaActiveSet<T>> E copy() {
+		try {
+			E copy = (E) getClass().newInstance();
+			
+			copy.entityManagerFactory = entityManagerFactory;
+			copy.jpaDaoSupport = jpaDaoSupport;
+			
+			return buildMeta(copy);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+	}
+
+	private <E extends JpaActiveSet<T>> E buildMeta(E copy) {
+		
+		copy.clazz = clazz;
+		copy.conditionsClause = conditionsClause;
+		copy.orderClause = orderClause;
+		copy.idField = getIdField(clazz);
+		copy.params = params;
+		copy.page = page;
+		copy.pageSize = pageSize;
+		
+		return copy;
+	}
+	
+	private String getRetainAllQuery() {
+		return "delete from " + getEntityName() + " " + getReferenceName() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
+	}
+	
+	private String getContainsAllQuery() {
+		return "select count(" + getReferenceName() + ") from " + getEntityName() + " " + getReferenceName() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
+	}
+	
+	private String getAllQuery() {
+		return "from " + getEntityName() + " " + getReferenceName() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
+	}
+	
+	private String getAndClause() {
+		return conditionsClause.length() == 0 ? "" : " and " + conditionsClause;
+	}
+	
+	private String getDeleteQuery() {
+		return "delete from " + getEntityName() + " " + getReferenceName() + getWhereClause();
+	}
+	
+	private String getEntityName() {
+		return clazz.getSimpleName();
+	}
+	
+	private String getWhereClause() {
+		return conditionsClause.length() == 0 ? "" : " where " + conditionsClause;
+	}
+	
+	private String getSizeQuery() {
+		return "SELECT COUNT(" + getEntityName() + ") FROM " + getEntityName() + " " + getReferenceName() + getWhereClause();
+	}
+	
+
 	
 	protected JpaTemplate getJpaTemplate() {
 		return jpaDaoSupport.getJpaTemplate();
@@ -144,7 +185,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		getJpaTemplate().execute(new JpaCallback() {
 	
 			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(deleteQuery);
+				Query query = em.createQuery(getDeleteQuery());
 				addParamsTo(query);
 				query.executeUpdate();
 				return null;
@@ -169,7 +210,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				
-				Query query = em.createQuery(containsAllQuery);
+				Query query = em.createQuery(getContainsAllQuery());
 				query.setParameter("entities", entities);
 				addParamsTo(query);
 				Long withMatchingIds = (Long) query.getSingleResult();
@@ -195,7 +236,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return ((Long)getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(sizeQuery);
+				Query query = em.createQuery(getSizeQuery());
 				addParamsTo(query);
 				return query.getSingleResult();
 			}
@@ -214,7 +255,27 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@SuppressWarnings("unchecked")
 	private List<T> getAll() {
-		return getJpaTemplate().find(getAllQuery, params.toArray());
+		return getJpaTemplate().executeFind(new JpaCallback() {
+
+			public Object doInJpa(EntityManager em) throws PersistenceException {
+				Query query = em.createQuery(getAllQuery());
+				for(int i = 0; i < params.size(); i++) {
+					query.setParameter(i, params.get(i));
+				}
+				
+				if (isPaged()) {
+					query.setFirstResult(page * pageSize);
+					query.setMaxResults(pageSize);
+				}
+				
+				return query.getResultList();
+			}
+			
+		});
+	}
+	
+	private boolean isPaged() {
+		return page != null;
 	}
 
 	public <AT> AT[] toArray(AT[] a) {
@@ -251,7 +312,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		getJpaTemplate().execute( new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(retainAllQuery);
+				Query query = em.createQuery(getRetainAllQuery());
 				query.setParameter("entities", entities);
 				query.executeUpdate();
 				return null;
@@ -265,22 +326,20 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
 		
 		List<Object> allParams = new ArrayList<Object>();
 		allParams.addAll(this.params);
 		allParams.addAll(Arrays.asList(params));
-		try {
-			E activeSet = (E) getClass().newInstance();
-			activeSet.jpaDaoSupport = jpaDaoSupport;
-			activeSet.entityManagerFactory = entityManagerFactory;
-			activeSet.buildMeta(clazz, this.conditionsClause + " " + conditionsClause, orderClause, allParams);
-			return activeSet;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		
+		String combinedConditionsClause = this.conditionsClause + " " + conditionsClause;
+		
+		E copy = copy();
+		copy.conditionsClause = combinedConditionsClause;
+		copy.params = allParams;
+		
+		return copy;
 		
 	}
 
@@ -293,7 +352,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	public T find(Long id) {
 		
 		T finding = findOrNull(id);
-		if (finding == null) throw new IllegalArgumentException("No " + referenceName + " with id " + id);
+		if (finding == null) throw new IllegalArgumentException("No " + getReferenceName() + " with id " + id);
 		
 		return finding;
 	}
@@ -306,6 +365,42 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	@Override
 	public void save(T entity) {
 		add(entity);
+	}
+
+	public Integer pageSize() {
+		return pageSize;
+	}
+
+	public <E extends JpaActiveSet<T>> E pagesOf(Integer pageSize) {
+		E copy = copy();
+		copy.pageSize = pageSize;
+		copy.page = page == null? 1 : page;
+		return copy;
+	}
+
+	public <E extends JpaActiveSet<T>> E page(int page) {
+		E copy = copy();
+		copy.page = page;
+		return copy;
+	}
+	
+	public T first() {
+		return getAll().get(FIRST);
+	}
+	
+	public String toString() {
+		Iterator<T> iter = iterator();
+		StringBuilder s = new StringBuilder();
+		
+		while(iter.hasNext()) {
+			s.append(iter.next().toString());
+		}
+		
+		return s.toString();
+	}
+
+	private String getReferenceName() {
+		return clazz.getSimpleName().toLowerCase();
 	}
 	
 }

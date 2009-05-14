@@ -9,6 +9,8 @@ import static com.googlecode.activecollections.PersonStubs.pearson;
 import static com.googlecode.activecollections.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -421,6 +423,60 @@ public class JpaActiveSetSpec {
 			assertThat(filteredPeople.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(peter, paul)));
 		}
 		
+		@Test
+		public void shouldHavePageSizeOfTwentyFive() {
+			assertThat(filteredPeople.pageSize(), equalTo(25));
+		}
+		
 	}
 
+
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class WithManyPeopleWithPageSizeOfTen {
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private JpaActiveSet<Person> pagedPeople;
+		
+		@Before
+		public void context() {
+			
+			JpaPeople people = new JpaPeople(entityManagerFactory);
+			
+			for(int i = 0; i < 10; i++) {
+				people.add(jim());
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				people.add(paul());
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				people.add(peter());
+			}
+			
+			pagedPeople = people.pagesOf(10);
+			
+		}
+		
+		@Test
+		public void shouldHavePagesOfTen() {
+			assertThat(pagedPeople.pageSize(), equalTo(10));
+		}
+		
+		@Test
+		public void shouldOnlyHaveItemsForCurrentPage() {
+			assertThat(pagedPeople, not(hasItem(paul())));
+		}
+		
+		@Test
+		public void shouldHaveNextPageContainingPaul() {
+			assertThat(pagedPeople.page(1).first().getName(), equalTo(paul().getName()));
+		}
+		
+	}
+
+	
 }
