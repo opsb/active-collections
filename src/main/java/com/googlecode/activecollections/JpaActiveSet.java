@@ -38,16 +38,16 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	private String getAllQuery;
 	
 	private Class<T> clazz;
-	
-	protected EntityManagerFactory entityManagerFactory;
 
 	private String conditionsClause;
 	
 	private List<Object> params;
 	
-	private JpaDaoSupport jpaDaoSupport;
-
 	private String orderClause;
+	
+	protected EntityManagerFactory entityManagerFactory;
+	
+	private JpaDaoSupport jpaDaoSupport;
 	
 	protected JpaActiveSet() {}
 	
@@ -56,8 +56,13 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		jpaDaoSupport = new JpaDaoSupport(){{
 			setEntityManagerFactory(entityManagerFactory);			
 		}};
-
 		this.entityManagerFactory = entityManagerFactory;
+
+		
+		buildMeta(clazz, conditionsClause, orderClause, params);
+	}
+
+	private void buildMeta(Class<T> clazz, String conditionsClause, String orderClause, List<Object> params) {
 		this.clazz = clazz;
 		this.conditionsClause = conditionsClause;
 		this.orderClause = orderClause;
@@ -98,7 +103,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 				}
 			}
 		}
-		
 		
 		throw new IllegalArgumentException("Entity must have a field marked with an Id annotation");
 	}
@@ -261,14 +265,23 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public ActiveSet<T> where(String conditionsClause, Object ... params) {
+	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
 		
 		List<Object> allParams = new ArrayList<Object>();
 		allParams.addAll(this.params);
 		allParams.addAll(Arrays.asList(params));
+		try {
+			E activeSet = (E) getClass().newInstance();
+			activeSet.jpaDaoSupport = jpaDaoSupport;
+			activeSet.entityManagerFactory = entityManagerFactory;
+			activeSet.buildMeta(clazz, this.conditionsClause + " " + conditionsClause, orderClause, allParams);
+			return activeSet;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		
-		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause + " " + conditionsClause, this.orderClause, allParams );
 	}
 
 	@Override

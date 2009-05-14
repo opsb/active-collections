@@ -85,7 +85,7 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	}
 
 	@Override
-	public ActiveSet<T> where(String conditionsClause, Object... params) {
+	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
 		throw new NotImplementedException();
 	}
 

@@ -22,7 +22,7 @@ public abstract class ActiveSet<T> implements Set<T> {
 		return activeSet(new HashSet<T>(asList(items)));
 	}
 	
-	public abstract ActiveSet<T> where(String conditionsClause, Object ... params);
+	public abstract <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params);
 	
 	public abstract T find(Long id);
 	
