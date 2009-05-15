@@ -10,6 +10,7 @@ import static com.googlecode.activecollections.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -221,6 +222,11 @@ public class JpaActiveSetSpec {
 			people.add(PAUL);
 		}
 
+		@Test
+		public void shouldChainConditions() {
+			assertThat(people.where("name like ?", "%p%").where("id = ?", 1L), equalTo(ActiveSet.<Person>empty()));
+		}
+		
 		@Test
 		public void canAddNewPerson() {
 

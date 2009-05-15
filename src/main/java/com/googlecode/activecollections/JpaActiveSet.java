@@ -21,6 +21,7 @@ import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Transactional(propagation=Propagation.REQUIRED)
 public class JpaActiveSet<T> extends ActiveSet<T> {
@@ -357,7 +358,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		allParams.putAll(this.params);
 		allParams.putAll(params);
 		
-		String combinedConditionsClause = this.conditionsClause + " " + conditionsClause;
+		boolean hasExistingClause = StringUtils.hasText(this.conditionsClause);
+		String combinedConditionsClause = hasExistingClause ? this.conditionsClause + " and " + conditionsClause : conditionsClause;
 		
 		E copy = copy();
 		copy.conditionsClause = combinedConditionsClause;
