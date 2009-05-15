@@ -284,7 +284,8 @@ public class JpaActiveSetSpec {
 		
 		@Test
 		public void shouldBeAbleToOrder() {
-			assertThat(people.orderedBy("name"), OrderMatcher.orderedSameAs(asList(PAUL, PETER)));
+			JpaPeople orderedPeople = people.orderedBy("name");
+			assertThat(orderedPeople, OrderMatcher.orderedSameAs(asList(PAUL, PETER)));
 		}
 		
 

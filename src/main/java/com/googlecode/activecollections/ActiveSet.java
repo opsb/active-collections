@@ -37,7 +37,7 @@ public abstract class ActiveSet<T> implements Set<T> {
 		return activeSet(new HashSet<T>());
 	}
 
-	public abstract ActiveSet<T> orderedBy(String orderClause);
+	public abstract <E extends JpaActiveSet<T>> E orderedBy(String orderClause);
 
 	public abstract Integer pageSize();
 

@@ -101,7 +101,7 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	}
 
 	@Override
-	public ActiveSet<T> orderedBy(String orderClause) {
+	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
 		throw new NotImplementedException();
 	}
 

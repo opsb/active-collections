@@ -369,8 +369,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@Override
-	public ActiveSet<T> orderedBy(String orderClause) {
-		return new JpaActiveSet<T>( clazz, entityManagerFactory, this.conditionsClause, orderClause, this.params );
+	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
+		E copy = copy();
+		copy.orderClause = orderClause;
+		return copy;
 	}
 
 	@Override
