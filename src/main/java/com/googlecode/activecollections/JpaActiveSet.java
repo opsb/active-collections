@@ -1,6 +1,7 @@
 package com.googlecode.activecollections;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,7 +66,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	@SuppressWarnings("unchecked")
 	private <E extends JpaActiveSet<T>> E copy() {
 		try {
-			E copy = (E) getClass().newInstance();
+			Constructor<E> constructor = (Constructor<E>) getClass().getDeclaredConstructor();
+			constructor.setAccessible(true);
+			E copy = constructor.newInstance();
 			
 			copy.entityManagerFactory = entityManagerFactory;
 			copy.jpaDaoSupport = jpaDaoSupport;
