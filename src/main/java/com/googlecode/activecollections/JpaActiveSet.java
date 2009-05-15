@@ -397,6 +397,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		add(entity);
 	}
 
+	@Override
 	public Integer pageSize() {
 		return pageSize;
 	}
@@ -418,6 +419,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return getAll().get(FIRST);
 	}
 	
+	@Override
 	public String toString() {
 		Iterator<T> iter = iterator();
 		StringBuilder s = new StringBuilder();
