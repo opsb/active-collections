@@ -144,7 +144,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			}
 		}
 		
-		throw new IllegalArgumentException("Entity must have a field marked with an Id annotation");
+		throw new IllegalArgumentException("Entity " + type.getName() + "must have a field marked with an Id annotation");
 	}
 
 	private Object getId(Object entity) {
