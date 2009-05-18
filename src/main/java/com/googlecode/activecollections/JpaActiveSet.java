@@ -247,7 +247,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public int size() {
-		System.out.println(getSizeQuery());
 		return ((Long)getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
