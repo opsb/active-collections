@@ -1,5 +1,7 @@
 package com.googlecode.activecollections;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,11 +17,18 @@ public class Person {
 
 	private String name;
 
+	private Date birthday;
+	
 	@SuppressWarnings("unused")
 	private Person() {} // Required by JPA
 
 	public Person(String name) {
+		this(name, new Date());
+	}
+	
+	public Person(String name, Date birthday) {
 		this.name = name;
+		this.birthday = birthday;
 	}
 	
 	public Long getId() {
@@ -28,6 +37,10 @@ public class Person {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public Date getBirthday() {
+		return birthday;
 	}
 	
 	@Override

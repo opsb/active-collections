@@ -17,12 +17,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -306,8 +309,12 @@ public class JpaActiveSetSpec {
 	@SpringApplicationContext("spring-context.xml")
 	public static class WithSeveralPeopleFilteredByNameLikeFoo {
 		
+		private static final Date START_DATE = new GregorianCalendar(2004, 3, 3).getTime();
+		private static final Date END_DATE = new GregorianCalendar(2004, 10, 3).getTime();
+		private static final Date BIRTHDAY = new GregorianCalendar(2004, 7, 3).getTime();
+		
 		private Person jim = jim();
-		private Person paul = paul();
+		private Person paul = new Person("Paul", BIRTHDAY);
 		private Person peter = peter();
 		private Person james = james();
 		private Person gabrial = gabrial();
@@ -432,6 +439,11 @@ public class JpaActiveSetSpec {
 		@Test
 		public void shouldHavePageSizeOfTwentyFive() {
 			assertThat(filteredPeople.pageSize(), equalTo(25));
+		}
+		
+		@Test
+		public void shouldQueryByDateRange() {
+			assertThat(filteredPeople.where("birthday between ? and ?", START_DATE, END_DATE), hasItem(paul));
 		}
 		
 	}

@@ -344,23 +344,16 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@Override
 	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
-		StringBuilder clauseWithNamedParams = new StringBuilder();
 		Map<String,Object> namedParams = new HashMap<String, Object>();
-		if (params.length > 0) {
-			int fromIndex = 0;
-			int endIndex = 0;
-			for(Object param : params) {
-				endIndex = conditionsClause.indexOf('?', fromIndex);
-				clauseWithNamedParams.append(conditionsClause.substring(fromIndex, endIndex));
-				String uniqueName = uniqueName();
-				clauseWithNamedParams.append(":" + uniqueName);
-				namedParams.put(uniqueName, param);
-				fromIndex = endIndex + 1;
-			}
-			endIndex = conditionsClause.length();
-			clauseWithNamedParams.append(conditionsClause.substring(fromIndex, endIndex));
+		
+		int uidCounter = this.params.size();
+		for(Object param : params) {
+			String uniqueName = "param" + uidCounter++;
+			conditionsClause = conditionsClause.replaceFirst("\\?", ":" + uniqueName);
+			namedParams.put(uniqueName, param);
 		}
-		return where(clauseWithNamedParams.toString(), namedParams);
+		
+		return where(conditionsClause, namedParams);
 	}
 	
 	@Override
@@ -379,10 +372,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 		return copy;
 		
-	}
-	
-	private String uniqueName() {
-		return "param" + params.size();
 	}
 
 	@Override
