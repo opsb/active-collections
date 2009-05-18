@@ -247,7 +247,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public int size() {
-		
+		System.out.println(getSizeQuery());
 		return ((Long)getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -282,7 +282,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 			private void addPagingTo(Query query) {
 				if (isPaged()) {
-					query.setFirstResult(page * pageSize);
+					query.setFirstResult((page -1) * pageSize);
 					query.setMaxResults(pageSize);
 				}
 			}
@@ -405,14 +405,19 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return pageSize;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E pagesOf(Integer pageSize) {
+		if (pageSize == null) return (E)this;
 		E copy = copy();
 		copy.pageSize = pageSize;
 		copy.page = page == null? 1 : page;
 		return copy;
 	}
 
-	public <E extends JpaActiveSet<T>> E page(int page) {
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E page(Integer page) {
+		if (page == null) return (E)this;
+		if (page < 1) throw new IllegalArgumentException("Page numbers start at 1");
 		E copy = copy();
 		copy.page = page;
 		return copy;

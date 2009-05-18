@@ -489,7 +489,12 @@ public class JpaActiveSetSpec {
 		
 		@Test
 		public void shouldHaveNextPageContainingPaul() {
-			assertThat(pagedPeople.page(1).first().getName(), equalTo(paul().getName()));
+			assertThat(pagedPeople.page(2).first().getName(), equalTo(paul().getName()));
+		}
+		
+		@Test(expected=IllegalArgumentException.class)
+		public void shouldNotAllowValuesLessThanOneAsPage() {
+			pagedPeople.page(0);
 		}
 		
 	}
