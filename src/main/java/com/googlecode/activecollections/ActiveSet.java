@@ -23,9 +23,9 @@ public abstract class ActiveSet<T> implements Set<T> {
 		return activeSet(new HashSet<T>(asList(items)));
 	}
 	
-	public abstract <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params);
+	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params);
 	
-	public abstract <E extends JpaActiveSet<T>> E where(String conditionsClause, Map<String,Object> params);
+	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params);
 	
 	public abstract T find(Long id);
 	
@@ -37,9 +37,13 @@ public abstract class ActiveSet<T> implements Set<T> {
 		return activeSet(new HashSet<T>());
 	}
 
-	public abstract <E extends JpaActiveSet<T>> E orderedBy(String orderClause);
+	public abstract <E extends ActiveSet<T>> E orderedBy(String orderClause);
 
 	public abstract Integer pageSize();
+	
+	public abstract <E extends ActiveSet<T>> E pagesOf(Integer pageSize);
+	
+	public abstract <E extends ActiveSet<T>> E page(Integer page);
 
 	
 }

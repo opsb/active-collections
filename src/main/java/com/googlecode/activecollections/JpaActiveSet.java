@@ -341,8 +341,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
+	public <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params) {
 		Map<String,Object> namedParams = new HashMap<String, Object>();
 		
 		int uidCounter = this.params.size();
@@ -352,11 +353,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			namedParams.put(uniqueName, param);
 		}
 		
-		return where(conditionsClause, namedParams);
+		return (E)where(conditionsClause, namedParams);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Map<String,Object> params) {
+	public <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params) {
 		
 		Map<String,Object> allParams = new HashMap<String,Object>();
 		allParams.putAll(this.params);
@@ -365,19 +367,20 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		boolean hasExistingClause = StringUtils.hasText(this.conditionsClause);
 		String combinedConditionsClause = hasExistingClause ? this.conditionsClause + " and " + conditionsClause : conditionsClause;
 		
-		E copy = copy();
+		JpaActiveSet<T> copy = copy();
 		copy.conditionsClause = combinedConditionsClause;
 		copy.params = allParams;
 		
-		return copy;
+		return (E)copy;
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
-		E copy = copy();
+	public <E extends ActiveSet<T> > E orderedBy(String orderClause) {
+		JpaActiveSet<T> copy = copy();
 		copy.orderClause = orderClause;
-		return copy;
+		return (E)copy;
 	}
 
 	@Override
@@ -404,22 +407,24 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return pageSize;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E pagesOf(Integer pageSize) {
+	public <E extends ActiveSet<T>> E pagesOf(Integer pageSize) {
 		if (pageSize == null) return (E)this;
-		E copy = copy();
+		JpaActiveSet<T> copy = copy();
 		copy.pageSize = pageSize;
 		copy.page = page == null? 1 : page;
-		return copy;
+		return (E)copy;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E page(Integer page) {
+	public <E extends ActiveSet<T>> E page(Integer page) {
 		if (page == null) return (E)this;
 		if (page < 1) throw new IllegalArgumentException("Page numbers start at 1");
-		E copy = copy();
+		JpaActiveSet<T> copy = copy();
 		copy.page = page;
-		return copy;
+		return (E)copy;
 	}
 	
 	public T first() {

@@ -86,11 +86,6 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	}
 
 	@Override
-	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object ... params) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public T findOrNull(Long id) {
 		throw new NotImplementedException();
 	}
@@ -101,18 +96,32 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	}
 
 	@Override
-	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public Integer pageSize() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public <E extends JpaActiveSet<T>> E where(String conditionsClause,
-			Map<String, Object> params) {
+	public <E extends ActiveSet<T>> E orderedBy(String orderClause) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E page(Integer page) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E pagesOf(Integer pageSize) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E where(String conditionsClause, Object... params) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E where(String conditionsClause, Map<String, Object> params) {
 		throw new NotImplementedException();
 	}
 
