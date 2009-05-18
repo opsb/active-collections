@@ -4,7 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +17,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
@@ -199,7 +202,16 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private void addParamsTo(Query query) {
 		for(Map.Entry<String, Object> entry : params.entrySet()) {
-			query.setParameter(entry.getKey(), entry.getValue());
+			Object value = entry.getValue();
+			if (value instanceof Date) {
+				query.setParameter(entry.getKey(), (Date)value, TemporalType.TIMESTAMP);
+			}
+			else if (value instanceof Calendar) {
+				query.setParameter(entry.getKey(), (Calendar)value, TemporalType.TIMESTAMP);
+			}
+			else {
+				query.setParameter(entry.getKey(), value);
+			}
 		}
 	}
 
