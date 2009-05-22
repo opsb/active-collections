@@ -473,7 +473,7 @@ public class JpaActiveSetSpec {
 				people.add(peter());
 			}
 			
-//			pagedPeople = people.pagesOf(10);
+			pagedPeople = people.pagesOf(10);
 			
 		}
 		
@@ -487,16 +487,16 @@ public class JpaActiveSetSpec {
 			assertThat(pagedPeople, not(hasItem(paul())));
 		}
 		
-		// TODO add back
-//		@Test
-//		public void shouldHaveNextPageContainingPaul() {
-//			assertThat(pagedPeople.page(2).first().getName(), equalTo(paul().getName()));
-//		}
-//		
-//		@Test(expected=IllegalArgumentException.class)
-//		public void shouldNotAllowValuesLessThanOneAsPage() {
-//			pagedPeople.page(0);
-//		}
+
+/*		@Test
+		public void shouldHaveNextPageContainingPaul() {
+			assertThat(pagedPeople.page(2).first().getName(), equalTo(paul().getName()));
+		}*/
+		
+		@Test(expected=IllegalArgumentException.class)
+		public void shouldNotAllowValuesLessThanOneAsPage() {
+			pagedPeople.page(0);
+		}
 		
 	}
 
