@@ -29,6 +29,8 @@ public abstract class ActiveSet<T> implements Set<T> {
 	
 	public abstract T find(Long id);
 	
+	public abstract T first();
+	
 	public abstract T findOrNull(Long id);
 	
 	public abstract void save(T entity);
@@ -45,5 +47,8 @@ public abstract class ActiveSet<T> implements Set<T> {
 	
 	public abstract <E extends ActiveSet<T>> E page(Integer page);
 
+	public abstract <E extends ActiveSet<T>> E join(String joins);
+	
+	public abstract Set<T> frozen();
 	
 }

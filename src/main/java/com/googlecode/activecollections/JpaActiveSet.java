@@ -8,9 +8,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -24,6 +27,7 @@ import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 @Transactional(propagation=Propagation.REQUIRED)
@@ -50,11 +54,13 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	private JpaDaoSupport jpaDaoSupport;
 
 	private Integer pageSize = DEFAULT_PAGE_SIZE;
+
+	private String joinsClause;
 	
 	protected JpaActiveSet() {}
 	
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, Map<String,Object> params) {
-		
+		Assert.notNull(entityManagerFactory, "Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
 		jpaDaoSupport = new JpaDaoSupport(){{
 			setEntityManagerFactory(entityManagerFactory);			
 		}};
@@ -89,6 +95,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		copy.clazz = clazz;
 		copy.conditionsClause = conditionsClause;
 		copy.orderClause = orderClause;
+		copy.joinsClause = joinsClause;
 		copy.idField = getIdField(clazz);
 		copy.params = params;
 		copy.page = page;
@@ -98,15 +105,19 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getRetainAllQuery() {
-		return "delete from " + getEntityName() + " " + getReferenceName() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
+		String retainAllQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
+		System.out.println("retainAllQuery: " + retainAllQuery);
+		return retainAllQuery;
 	}
 	
 	private String getContainsAllQuery() {
-		return "select count(" + getReferenceName() + ") from " + getEntityName() + " " + getReferenceName() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
+		String containsAllQuery = "select count(" + getReferenceName() + ") from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
+		System.out.println("ContainsAll query " + containsAllQuery);
+		return containsAllQuery;
 	}
 	
 	private String getAllQuery() {
-		return "from " + getEntityName() + " " + getReferenceName() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
+		return "select " + getReferenceName() + " from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
 	}
 	
 	private String getAndClause() {
@@ -114,11 +125,16 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getDeleteQuery() {
-		return "delete from " + getEntityName() + " " + getReferenceName() + getWhereClause();
+		return "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
 	}
 	
 	private String getEntityName() {
 		return clazz.getSimpleName();
+	}
+	
+	private String getJoinClause() {
+		if (!StringUtils.hasText(joinsClause)) return "";
+		return " " + joinsClause + " ";
 	}
 	
 	private String getWhereClause() {
@@ -126,7 +142,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getSizeQuery() {
-		return "SELECT COUNT(" + getEntityName() + ") FROM " + getEntityName() + " " + getReferenceName() + getWhereClause();
+		return "SELECT COUNT(" + getReferenceName() + ") FROM " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
 	}
 	
 	protected JpaTemplate getJpaTemplate() {
@@ -247,6 +263,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public int size() {
+		System.out.println("size query: " + getSizeQuery());
 		return ((Long)getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -269,6 +286,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@SuppressWarnings("unchecked")
 	private List<T> getAll() {
+		System.out.println("getAllQuery: " + getAllQuery());
 		return getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -374,6 +392,20 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return (E)copy;
 		
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <E extends ActiveSet<T>> E join(String join) {
+		
+		String joinClause = "join " + join; 
+		JpaActiveSet<T> copy = copy();
+		boolean hasExistingJoins = StringUtils.hasText(this.joinsClause);
+		String combinedJoinsClause = hasExistingJoins ? this.joinsClause + "  " + joinClause : joinClause;
+		copy.joinsClause = combinedJoinsClause;
+		
+		return (E)copy;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -427,6 +459,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return (E)copy;
 	}
 	
+	@Override
 	public T first() {
 		return getAll().get(FIRST);
 	}
@@ -435,12 +468,20 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	public String toString() {
 		Iterator<T> iter = iterator();
 		StringBuilder s = new StringBuilder();
-		
 		while(iter.hasNext()) {
 			s.append(iter.next().toString());
+			if (iter.hasNext()) {
+				s.append(", ");
+			}
 		}
 		
+		
 		return s.toString();
+	}
+	
+	@Override
+	public Set<T> frozen() {
+		return new LinkedHashSet<T>(this);
 	}
 
 	private String getReferenceName() {

@@ -125,4 +125,19 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public <E extends ActiveSet<T>> E join(String joins) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Set<T> frozen() {
+		return this;
+	}
+
+	@Override
+	public T first() {
+		return iterator().next();
+	}
+
 }
