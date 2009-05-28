@@ -122,7 +122,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getAllQuery() {
-		return "select " + getReferenceName() + " from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
+		String getAllQuery  = "select " + getReferenceName() + " from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
+		System.out.println("GetAll query " + getAllQuery);
+		return getAllQuery;
 	}
 	
 	private String getAndClause() {
@@ -130,7 +132,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getDeleteQuery() {
-		return "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
+		String deleteQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
+		System.out.println("DeleteQuery " + deleteQuery);
+		return deleteQuery;
 	}
 	
 	private String getEntityName() {
@@ -147,7 +151,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getSizeQuery() {
-		return "SELECT COUNT(" + getReferenceName() + ") FROM " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
+		String sizeQuery = "SELECT COUNT(" + getReferenceName() + ") FROM " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
+		System.out.println(sizeQuery);
+		return sizeQuery;
 	}
 	
 	protected JpaTemplate getJpaTemplate() {
@@ -266,7 +272,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public int size() {
-		System.out.println("size query: " + getSizeQuery());
 		return ((Long)getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -289,7 +294,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@SuppressWarnings("unchecked")
 	private List<T> getAll() {
-		System.out.println("getAllQuery: " + getAllQuery());
 		return getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
