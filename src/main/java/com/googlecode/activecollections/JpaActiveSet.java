@@ -8,7 +8,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,7 +59,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	protected JpaActiveSet() {}
 	
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, Map<String,Object> params) {
+		
 		Assert.notNull(entityManagerFactory, "Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
+		Assert.notNull(clazz, "Must specify a class");
 		jpaDaoSupport = new JpaDaoSupport(){{
 			setEntityManagerFactory(entityManagerFactory);			
 		}};
@@ -73,6 +74,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		this.params = params;
 	}
 
+	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
+		this( clazz, entityManagerFactory, "", "", new HashMap<String, Object>() );
+	}
+	
 	@SuppressWarnings("unchecked")
 	private <E extends JpaActiveSet<T>> E copy() {
 		try {
@@ -147,10 +152,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	protected JpaTemplate getJpaTemplate() {
 		return jpaDaoSupport.getJpaTemplate();
-	}
-	
-	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this( clazz, entityManagerFactory, "", "", new HashMap<String, Object>() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,6 +233,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public boolean containsAll(final Collection<? extends Object> entities) {
+		
+		if (entities == null || entities.isEmpty()) return false;
 		
 		for(Object entity : entities) {
 			if (!isPersisted(entity)) return false;
@@ -482,6 +485,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	@Override
 	public Set<T> frozen() {
 		return new LinkedHashSet<T>(this);
+	}
+	
+
+	@Override
+	public Collection<T> refreshAll(Collection<T> staleEntities) {
+		return where(getReferenceName() + " in ?", staleEntities);
 	}
 
 	private String getReferenceName() {

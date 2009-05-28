@@ -140,4 +140,9 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		return iterator().next();
 	}
 
+	@Override
+	public Collection<T> refreshAll(Collection<T> staleEntities) {
+		throw new NotImplementedException();
+	}
+
 }
