@@ -494,7 +494,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
-		return where(getReferenceName() + " in ?", staleEntities);
+		return where(getReferenceName() + " in (?)", staleEntities);
 	}
 
 	private String getReferenceName() {
