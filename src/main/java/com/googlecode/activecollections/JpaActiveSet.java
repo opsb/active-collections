@@ -3,6 +3,7 @@ package com.googlecode.activecollections;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -492,12 +493,17 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 
+	public List<T> frozenList() {
+		return new ArrayList<T>(this);
+	}
+	
+
 	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
 		return where(getReferenceName() + " in (?)", staleEntities);
 	}
 
-	private String getReferenceName() {
+	protected String getReferenceName() {
 		return clazz.getSimpleName().toLowerCase();
 	}
 	
