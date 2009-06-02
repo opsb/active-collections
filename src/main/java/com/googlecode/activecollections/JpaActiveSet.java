@@ -14,6 +14,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -174,7 +176,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 				}
 			}
 		}
-		
+	
 		throw new IllegalArgumentException("Entity " + type.getName() + "must have a field marked with an Id annotation");
 	}
 
@@ -382,6 +384,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return (E)where(conditionsClause, namedParams);
 	}
 	
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params) {
@@ -493,8 +497,14 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 
+	@Override
 	public List<T> frozenList() {
 		return new ArrayList<T>(this);
+	}
+	
+	@Override
+	public SortedSet<T> frozenSortedSet() {
+		return new TreeSet<T>(this);
 	}
 	
 

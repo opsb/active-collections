@@ -2,8 +2,10 @@ package com.googlecode.activecollections;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -142,6 +144,16 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 
 	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<T> frozenList() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public SortedSet<T> frozenSortedSet() {
 		throw new NotImplementedException();
 	}
 

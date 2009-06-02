@@ -4,8 +4,10 @@ import static java.util.Arrays.asList;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -51,6 +53,10 @@ public abstract class ActiveSet<T> implements Set<T> {
 	public abstract <E extends ActiveSet<T>> E join(String joins);
 	
 	public abstract Set<T> frozen();
+
+	public abstract List<T> frozenList();
+	
+	public abstract SortedSet<T> frozenSortedSet();
 	
 	public abstract Collection<T> refreshAll(Collection<T> staleEntities);
 
