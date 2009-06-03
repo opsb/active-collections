@@ -435,6 +435,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 		return finding;
 	}
+	
+	public <E extends ActiveSet<T>> E find(List<Long> ids) {
+		return where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
+	}
 
 	@Override
 	public T findOrNull(Long id) {
@@ -515,6 +519,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	protected String getReferenceName() {
 		return clazz.getSimpleName().toLowerCase();
+	}
+	
+	protected String getIdReferenceName() {
+		return getIdField(clazz).getName();
 	}
 	
 }
