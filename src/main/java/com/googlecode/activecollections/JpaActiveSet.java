@@ -30,6 +30,7 @@ import org.springframework.orm.jpa.support.JpaDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Transactional(propagation=Propagation.REQUIRED)
@@ -514,6 +515,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
+		if(CollectionUtils.isEmpty(staleEntities)) return staleEntities;
 		return where(getReferenceName() + " in (?)", staleEntities);
 	}
 
