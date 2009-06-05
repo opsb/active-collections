@@ -92,14 +92,19 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			copy.entityManagerFactory = entityManagerFactory;
 			copy.jpaDaoSupport = jpaDaoSupport;
 			
-			return buildMeta(copy);
+			addMeta(copy);
+			afterCopy(copy);
+			
+			return copy;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		
 	}
+	
+	protected <E extends JpaActiveSet<T>> void afterCopy(@SuppressWarnings("unused") E copy) {}
 
-	private <E extends JpaActiveSet<T>> E buildMeta(E copy) {
+	private <E extends JpaActiveSet<T>> void  addMeta(E copy) {
 		
 		copy.clazz = clazz;
 		copy.conditionsClause = conditionsClause;
@@ -110,7 +115,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		copy.page = page;
 		copy.pageSize = pageSize;
 		
-		return copy;
 	}
 	
 	private String getRetainAllQuery() {
