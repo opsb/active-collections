@@ -4,12 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import com.googlecode.activecollections.ActiveSet;
 
-public class SerializableActiveSetPostProcessor {
+public class SerializableActiveSetPostProcessor implements BeanPostProcessor, DisposableBean {
 
 	private static final Log logger = LogFactory.getLog(SerializableActiveSetPostProcessor.class);
 	static ApplicationContext applicationContext;
@@ -35,7 +37,7 @@ public class SerializableActiveSetPostProcessor {
 		}
 	}
 
-	public Object postProcessBeforeInitialization(Object bean, @SuppressWarnings("unused") String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
@@ -47,6 +49,10 @@ public class SerializableActiveSetPostProcessor {
 	public static <T> T getBean(String name) {
 		Assert.notNull(applicationContext, "No application context available, can not get bean: " + name);
 		return (T)applicationContext.getBean(name);
+	}
+
+	public void destroy() throws Exception {
+		applicationContext = null;
 	}
 	
 }
