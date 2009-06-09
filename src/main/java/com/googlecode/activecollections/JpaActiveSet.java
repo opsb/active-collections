@@ -217,6 +217,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 		return hasAddedEntities; 
 	}
+	
+	public boolean addAll(T ... entities) {
+		return addAll(Arrays.asList(entities));
+	}
 
 	public void clear() {
 		getJpaTemplate().execute(new JpaCallback() {
@@ -441,8 +445,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return finding;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <E extends ActiveSet<T>> E find(List<Long> ids) {
-		return where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
+		return (E)where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
 	}
 
 	@Override

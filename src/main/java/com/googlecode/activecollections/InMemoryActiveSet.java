@@ -157,4 +157,9 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public boolean addAll(T... entities) {
+		throw new NotImplementedException();
+	}
+
 }
