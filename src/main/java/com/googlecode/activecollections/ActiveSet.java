@@ -64,4 +64,6 @@ public abstract class ActiveSet<T> implements Set<T> {
 	
 	public abstract boolean addAll(T ... entities);
 	
+	public abstract <E extends ActiveSet<T>> E in(Collection<T> entities);
+	
 }

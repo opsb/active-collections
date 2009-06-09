@@ -41,8 +41,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private static final Integer DEFAULT_PAGE_SIZE = 25;
 
-	private static final int FIRST = 0;
-
 	private Field idField;
 	
 	private Class<T> clazz;
@@ -309,8 +307,18 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return getAll().toArray();
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public T first() {
+		Collection<T> all = getAll(1);
+		return all.isEmpty() ? null : all.iterator().next();
+	}
+	
 	private List<T> getAll() {
+		return getAll(pageSize);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<T> getAll(final int maxResults) {
 		return getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -324,12 +332,13 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			private void addPagingTo(Query query) {
 				if (isPaged()) {
 					query.setFirstResult((page -1) * pageSize);
-					query.setMaxResults(pageSize);
+					query.setMaxResults(maxResults);
 				}
 			}
 			
 		});
 	}
+	
 	
 	private boolean isPaged() {
 		return page != null;
@@ -491,11 +500,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	@Override
-	public T first() {
-		return getAll().get(FIRST);
-	}
-	
-	@Override
 	public String toString() {
 		Iterator<T> iter = iterator();
 		StringBuilder s = new StringBuilder();
@@ -510,11 +514,27 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return s.toString();
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected <E extends ActiveSet<T>> E all() {
+		return (E) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected  <E extends ActiveSet<T>> E none() {
+		return (E)where("true = false");
+	}
+	
 	@Override
 	public Set<T> frozen() {
 		return new LinkedHashSet<T>(this);
 	}
 	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <E extends ActiveSet<T>> E in(Collection<T> entities) {
+		if (entities == null || entities.isEmpty()) return (E)none();
+		return (E)where(getReferenceName() + " in (?)", entities);
+	}
 
 	@Override
 	public List<T> frozenList() {

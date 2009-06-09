@@ -163,4 +163,9 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public <E extends ActiveSet<T>> E in(Collection<T> entities) {
+		throw new NotImplementedException();
+	}
+
 }
