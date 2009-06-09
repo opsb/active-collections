@@ -1,7 +1,7 @@
 package com.googlecode.activecollections.spring;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.log4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -10,10 +10,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 import com.googlecode.activecollections.ActiveSet;
+import com.googlecode.activecollections.JpaActiveSet;
 
 public class SerializableActiveSetPostProcessor implements BeanPostProcessor, DisposableBean {
 
-	private static final Log logger = LogFactory.getLog(SerializableActiveSetPostProcessor.class);
+	private final Logger logger = Logger.getLogger(JpaActiveSet.class);
 	static ApplicationContext applicationContext;
 	
 	public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {

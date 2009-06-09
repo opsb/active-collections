@@ -24,8 +24,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
@@ -38,7 +37,7 @@ import org.springframework.util.StringUtils;
 @Transactional(propagation=Propagation.REQUIRED)
 public class JpaActiveSet<T> extends ActiveSet<T> {
 
-	private static final Log logger = LogFactory.getLog(JpaActiveSet.class);
+	private final Logger logger = Logger.getLogger(JpaActiveSet.class);
 	
 	private static final Integer DEFAULT_PAGE_SIZE = 25;
 
