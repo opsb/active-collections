@@ -21,6 +21,7 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		return items.add(o);
 	}
 
+	@Override
 	public boolean addAll(Collection<? extends T> c) {
 		return items.addAll(c);
 	}
