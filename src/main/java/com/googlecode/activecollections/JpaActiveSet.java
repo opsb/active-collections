@@ -24,6 +24,8 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.support.JpaDaoSupport;
@@ -36,6 +38,8 @@ import org.springframework.util.StringUtils;
 @Transactional(propagation=Propagation.REQUIRED)
 public class JpaActiveSet<T> extends ActiveSet<T> {
 
+	private static final Log logger = LogFactory.getLog(JpaActiveSet.class);
+	
 	private static final Integer DEFAULT_PAGE_SIZE = 25;
 
 	private static final int FIRST = 0;
@@ -119,19 +123,19 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private String getRetainAllQuery() {
 		String retainAllQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
-		System.out.println("retainAllQuery: " + retainAllQuery);
+		logger.debug("retainAllQuery: " + retainAllQuery);
 		return retainAllQuery;
 	}
 	
 	private String getContainsAllQuery() {
 		String containsAllQuery = "select count(" + getReferenceName() + ") from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
-		System.out.println("ContainsAll query " + containsAllQuery);
+		logger.debug("ContainsAll query " + containsAllQuery);
 		return containsAllQuery;
 	}
 	
 	private String getAllQuery() {
 		String getAllQuery  = "select " + getReferenceName() + " from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
-		System.out.println("GetAll query " + getAllQuery);
+		logger.debug("GetAll query " + getAllQuery);
 		return getAllQuery;
 	}
 	
@@ -141,7 +145,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private String getDeleteQuery() {
 		String deleteQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
-		System.out.println("DeleteQuery " + deleteQuery);
+		logger.debug("DeleteQuery " + deleteQuery);
 		return deleteQuery;
 	}
 	
@@ -160,7 +164,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	private String getSizeQuery() {
 		String sizeQuery = "SELECT COUNT(" + getReferenceName() + ") FROM " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
-		System.out.println(sizeQuery);
+		logger.debug(sizeQuery);
 		return sizeQuery;
 	}
 	
@@ -207,6 +211,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return false;
 	}
 
+	@Override
 	public boolean addAll(Collection<? extends T> entities) {
 		
 		for(T entity : entities) {
@@ -218,6 +223,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return hasAddedEntities; 
 	}
 	
+	@Override
 	public boolean addAll(T ... entities) {
 		return addAll(Arrays.asList(entities));
 	}
