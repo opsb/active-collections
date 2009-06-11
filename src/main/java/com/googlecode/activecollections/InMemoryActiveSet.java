@@ -178,4 +178,9 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public Set<T> frozenSet() {
+		throw new NotImplementedException();
+	}
+
 }

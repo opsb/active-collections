@@ -62,6 +62,8 @@ public abstract class ActiveSet<T> implements Set<T> {
 	
 	public abstract SortedSet<T> frozenSortedSet();
 	
+	public abstract Set<T> frozenSet();
+	
 	public abstract Collection<T> refreshAll(Collection<T> staleEntities);
 	
 	public abstract boolean addAll(Collection<? extends T> entities); 

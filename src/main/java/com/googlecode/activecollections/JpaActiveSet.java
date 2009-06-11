@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -549,7 +550,11 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return new TreeSet<T>(this);
 	}
 	
-
+	@Override
+	public Set<T> frozenSet() {
+		return new HashSet<T>(this);
+	}
+	
 	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
 		if(CollectionUtils.isEmpty(staleEntities)) return staleEntities;
@@ -572,6 +577,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return (E)copy;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends ActiveSet<T>> E select(String select) {
 		JpaActiveSet<T> copy = copy();
