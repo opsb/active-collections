@@ -1,5 +1,6 @@
 package com.googlecode.activecollections;
 
+import static com.googlecode.activecollections.BeanPropertyParam.beanParam;
 import static com.googlecode.activecollections.PersonStubs.gabrial;
 import static com.googlecode.activecollections.PersonStubs.james;
 import static com.googlecode.activecollections.PersonStubs.jim;
@@ -519,7 +520,12 @@ public class JpaActiveSetSpec {
 			pagedPeople.page(0);
 		}
 		
+		@Test
+		public void shouldPerformWhereUsingBeanPropertyParam() {
+			pagedPeople.where("name like ?", beanParam(jim(), "name"));
+		}
+		
 	}
-
+	
 	
 }

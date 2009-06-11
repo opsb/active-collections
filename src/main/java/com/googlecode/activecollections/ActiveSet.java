@@ -32,8 +32,6 @@ public abstract class ActiveSet<T> implements Set<T> {
 	
 	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params);
 	
-	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params);
-	
 	public abstract T find(Long id);
 	
 	public abstract T first();

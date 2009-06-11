@@ -124,11 +124,6 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 	}
 
 	@Override
-	public <E extends ActiveSet<T>> E where(String conditionsClause, Map<String, Object> params) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public <E extends ActiveSet<T>> E join(String joins) {
 		throw new NotImplementedException();
 	}

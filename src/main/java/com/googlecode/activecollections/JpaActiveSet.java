@@ -48,9 +48,9 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	private Integer page;
 	
-	private String conditionsClause;
+	private String conditionsClause = "";
 	
-	private Map<String,Object> params;
+	private Map<String,Object> params = new HashMap<String, Object>();
 	
 	private String orderClause;
 	
@@ -68,7 +68,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	protected JpaActiveSet() {}
 	
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, Map<String,Object> params) {
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, List<Object> params) {
 		
 		Assert.notNull(entityManagerFactory, "Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
 		Assert.notNull(clazz, "Must specify a class");
@@ -78,14 +78,19 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		this.entityManagerFactory = entityManagerFactory;
 		
 		this.clazz = clazz;
-		this.conditionsClause = conditionsClause;
+
+		if (StringUtils.hasText(conditionsClause)) {
+			JpaClause conditionsJpaClause = buildClause(conditionsClause, params);
+			this.conditionsClause = conditionsJpaClause.getJpa();
+			this.params = conditionsJpaClause.getParams();
+		}
+		
 		this.orderClause = orderClause;
 		this.idField = getIdField(clazz);
-		this.params = params;
 	}
 
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this( clazz, entityManagerFactory, "", "", new HashMap<String, Object>() );
+		this( clazz, entityManagerFactory, "", "", new ArrayList<Object>() );
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -251,6 +256,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			else if (value instanceof Calendar) {
 				query.setParameter(entry.getKey(), (Calendar)value, TemporalType.TIMESTAMP);
 			}
+			else if (DynamicParam.class.isAssignableFrom(value.getClass())) {
+				query.setParameter(entry.getKey(), ((DynamicParam) value).getParam());
+			}
+			else if (BeanPropertyParam.class.isAssignableFrom(value.getClass())) {
+				query.setParameter(entry.getKey(), ((DynamicParam) value).getParam());
+			}
 			else {
 				query.setParameter(entry.getKey(), value);
 			}
@@ -396,9 +407,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params) {
+	private JpaClause buildClause(String conditionsClause, List<Object> params) {
 		Map<String,Object> namedParams = new HashMap<String, Object>();
 		
 		int uidCounter = this.params.size();
@@ -408,21 +417,32 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			namedParams.put(uniqueName, param);
 		}
 		
-		return (E)where(conditionsClause, namedParams);
+		return new JpaClause(conditionsClause, namedParams);
 	}
 	
+	private JpaClause buildClause(String conditionsClause, Object ... params) {
+		return buildClause(conditionsClause, Arrays.asList(params));
+		
+	}
 	
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params) {
+	public <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params) {
+		
+		return (E) where(buildClause(conditionsClause, params));
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <E extends ActiveSet<T>> E where(JpaClause clause) {
 		
 		Map<String,Object> allParams = new HashMap<String,Object>();
 		allParams.putAll(this.params);
-		allParams.putAll(params);
+		allParams.putAll(clause.getParams());
 		
 		boolean hasExistingClause = StringUtils.hasText(this.conditionsClause);
-		String combinedConditionsClause = hasExistingClause ? this.conditionsClause + " and " + conditionsClause : conditionsClause;
+		String combinedConditionsClause = hasExistingClause ? this.conditionsClause + " and " + clause.getJpa() : clause.getJpa();
 		
 		JpaActiveSet<T> copy = copy();
 		copy.conditionsClause = combinedConditionsClause;
