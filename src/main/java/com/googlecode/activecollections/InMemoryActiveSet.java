@@ -168,4 +168,14 @@ class InMemoryActiveSet<T> extends ActiveSet<T>{
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public <E extends ActiveSet<T>> E from(String from) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E select(String select) {
+		throw new NotImplementedException();
+	}
+
 }

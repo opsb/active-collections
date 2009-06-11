@@ -61,6 +61,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 
 	private String joinsClause;
 	
+	private String fromClause;
+	
+	private String selectClause;
+	
 	protected JpaActiveSet() {}
 	
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String conditionsClause, String orderClause, Map<String,Object> params) {
@@ -108,6 +112,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	private <E extends JpaActiveSet<T>> void  addMeta(E copy) {
 		
 		copy.clazz = clazz;
+		copy.fromClause = fromClause;
+		copy.selectClause = selectClause;
 		copy.conditionsClause = conditionsClause;
 		copy.orderClause = orderClause;
 		copy.joinsClause = joinsClause;
@@ -118,32 +124,38 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		
 	}
 	
+	private String getFromClause() {
+		return "from " + (fromClause == null ? getEntityName() + " " + getReferenceName() : fromClause);
+	}
+	
+	private String getSelectClause() {
+		return "select " + (selectClause == null ? getReferenceName() : selectClause );
+	}
+	
+	private String getSelectCountClause() {
+		return "select count(" + (selectClause == null ? getReferenceName() : selectClause ) + ")";
+	}
+	
 	private String getRetainAllQuery() {
-		String retainAllQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
+		String retainAllQuery = "delete " + getFromClause() + " " + getJoinClause() + " where " + getReferenceName() + " not in (:entities)" + getAndClause();
 		logger.debug("retainAllQuery: " + retainAllQuery);
 		return retainAllQuery;
 	}
 	
 	private String getContainsAllQuery() {
-		String containsAllQuery = "select count(" + getReferenceName() + ") from " + getEntityName() + " " + getReferenceName() + getJoinClause() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
+		String containsAllQuery = getSelectCountClause() +" " +getFromClause() + " " + getJoinClause() + " where " + getReferenceName() + " in (:entities)" + getAndClause();
 		logger.debug("ContainsAll query " + containsAllQuery);
 		return containsAllQuery;
 	}
 	
 	private String getAllQuery() {
-		String getAllQuery  = "select " + getReferenceName() + " from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
+		String getAllQuery  = getSelectClause() + " " + getFromClause() + " " + getJoinClause() + getWhereClause() + (orderClause.length() == 0 ? "" : " order by " + orderClause);
 		logger.debug("GetAll query " + getAllQuery);
 		return getAllQuery;
 	}
 	
 	private String getAndClause() {
 		return conditionsClause.length() == 0 ? "" : " and " + conditionsClause;
-	}
-	
-	private String getDeleteQuery() {
-		String deleteQuery = "delete from " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
-		logger.debug("DeleteQuery " + deleteQuery);
-		return deleteQuery;
 	}
 	
 	private String getEntityName() {
@@ -160,7 +172,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getSizeQuery() {
-		String sizeQuery = "SELECT COUNT(" + getReferenceName() + ") FROM " + getEntityName() + " " + getReferenceName() + getJoinClause() + getWhereClause();
+		String sizeQuery = getSelectCountClause() + " " + getFromClause() + " " + getJoinClause() + getWhereClause();
 		logger.debug(sizeQuery);
 		return sizeQuery;
 	}
@@ -226,16 +238,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	public void clear() {
-		getJpaTemplate().execute(new JpaCallback() {
-	
-			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(getDeleteQuery());
-				addParamsTo(query);
-				query.executeUpdate();
-				return null;
-			}
-			
-		});
+		removeAll(this);
 	}
 	
 	private void addParamsTo(Query query) {
@@ -559,6 +562,21 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	
 	protected String getIdReferenceName() {
 		return getIdField(clazz).getName();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <E extends ActiveSet<T>> E from(String from) {
+		JpaActiveSet<T> copy = copy();
+		copy.fromClause = from;
+		return (E)copy;
+	}
+
+	@Override
+	public <E extends ActiveSet<T>> E select(String select) {
+		JpaActiveSet<T> copy = copy();
+		copy.selectClause = select;
+		return (E)copy;
 	}
 	
 }

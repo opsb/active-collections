@@ -26,6 +26,10 @@ public abstract class ActiveSet<T> implements Set<T> {
 		return activeSet(new HashSet<T>(asList(items)));
 	}
 	
+	public abstract <E extends ActiveSet<T>> E select(String select);
+	
+	public abstract <E extends ActiveSet<T>> E from(String from);
+	
 	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Object ... params);
 	
 	public abstract <E extends ActiveSet<T>> E where(String conditionsClause, Map<String,Object> params);
