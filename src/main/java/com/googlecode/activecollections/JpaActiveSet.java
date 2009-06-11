@@ -256,10 +256,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 			else if (value instanceof Calendar) {
 				query.setParameter(entry.getKey(), (Calendar)value, TemporalType.TIMESTAMP);
 			}
-			else if (DynamicParam.class.isAssignableFrom(value.getClass())) {
-				query.setParameter(entry.getKey(), ((DynamicParam) value).getParam());
-			}
-			else if (BeanPropertyParam.class.isAssignableFrom(value.getClass())) {
+			else if (value instanceof DynamicParam) {
 				query.setParameter(entry.getKey(), ((DynamicParam) value).getParam());
 			}
 			else {
