@@ -158,7 +158,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 	
 	private String getAllQuery() {
-		String getAllQuery = buildQuery(getSelectClause(), getWhereClause(), (orderClause.length() == 0 ? "" : " order by " + orderClause));
+		String getAllQuery = buildQuery(getSelectClause(), getWhereClause(), getOrderClause());
 		logger.debug("getAll query: " + getAllQuery);
 		return getAllQuery;
 	}
@@ -167,6 +167,10 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		String sizeQuery = buildQuery(getSelectCountClause(), getWhereClause(), NO_ORDER_SPECIFIED);
 		logger.debug("size query: " + sizeQuery);
 		return sizeQuery;
+	}
+	
+	private String getOrderClause() {
+		return orderClause == null || orderClause.length() == 0 ? "" : " order by " + orderClause;
 	}
 	
 	private String buildQuery(String operationClause, String whereClause, String orderClause) {
