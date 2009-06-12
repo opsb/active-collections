@@ -39,5 +39,9 @@ public class JpaClause {
 	public String getJpa() {
 		return jpa;
 	}
+	
+	public boolean isEnabled() {
+		return true;
+	}
 
 }

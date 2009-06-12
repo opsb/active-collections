@@ -620,7 +620,70 @@ public class JpaActiveSetSpec {
 			assertFalse(peopleContainingPaulAndJim.jimOnly().containsAll(beginningWithP));
 		}
 		
+		
+		
 	}
 	
+
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class SubclassedActiveSetWithVarArgsParamsAndDisabledClause {
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private PeopleContainingPaulAndJimWithDisabledClause peopleContainingPaulAndJim;
+		
+		private Set<Person> beginningWithP;
+		
+		private Set<Person> beginningWithJ;
+
+		private Set<Person> beginningWithG;
+		
+		@Before
+		public void context() {
+			
+			peopleContainingPaulAndJim = new PeopleContainingPaulAndJimWithDisabledClause(entityManagerFactory);
+			beginningWithP = new HashSet<Person>();
+			beginningWithJ = new HashSet<Person>();
+			beginningWithG = new HashSet<Person>();
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = jim();
+				peopleContainingPaulAndJim.add(person);
+				beginningWithJ.add(person);
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = paul();
+				peopleContainingPaulAndJim.add(person);
+				beginningWithP.add(person);
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = gabrial();
+				peopleContainingPaulAndJim.add(person);
+				beginningWithG.add(person);
+			}
+		}
+		
+		@Test
+		public void shouldContainGabrials() {
+			assertTrue(peopleContainingPaulAndJim.containsAll(beginningWithG));
+		}
+		
+		@Test
+		public void shouldContainJims() {
+			assertTrue(peopleContainingPaulAndJim.containsAll(beginningWithJ));
+		}
+		
+		@Test
+		public void shouldHaveJimsOnly() {
+			assertFalse(peopleContainingPaulAndJim.jimOnly().containsAll(beginningWithP));
+		}
+		
+		
+		
+	}
 	
 }
