@@ -478,7 +478,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <E extends ActiveSet<T>> E where(JpaClause clause) {
+	public <E extends ActiveSet<T>> E where(JpaClause clause) {
 
 		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
 		combinedConditions.add(clause);
