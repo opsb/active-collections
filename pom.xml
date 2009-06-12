@@ -122,7 +122,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager </artifactId>
+			<artifactId>hibernate-entitymanager 
+			</artifactId>
 			<version>3.4.0.GA</version>
 			<exclusions>
 				<exclusion>
@@ -157,7 +158,6 @@
 			<version>1.0</version>
 		</dependency>
 		<!-- Persistence End -->
-
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils-core</artifactId>
@@ -195,7 +195,6 @@
 			<url>dav:http://artifactory.nl.informatm.com/artifactory/libs-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-
 	<reporting>
 		<plugins>
 			<plugin>

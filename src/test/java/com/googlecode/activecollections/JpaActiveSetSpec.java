@@ -527,5 +527,100 @@ public class JpaActiveSetSpec {
 		
 	}
 	
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class SubclassedActiveSet {
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private PeopleBeginningWithP peopleBeginningWithP;
+		
+		private Set<Person> beginningWithP;
+		
+		private Set<Person> beginningWithJ;
+
+		@Before
+		public void context() {
+			
+			peopleBeginningWithP = new PeopleBeginningWithP(entityManagerFactory);
+			beginningWithP = new HashSet<Person>();
+			beginningWithJ = new HashSet<Person>();
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = jim();
+				peopleBeginningWithP.add(person);
+				beginningWithJ.add(person);
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = paul();
+				peopleBeginningWithP.add(person);
+				beginningWithP.add(person);
+			}
+		}
+		
+		@Test
+		public void shouldContainPeopleBeginningWithP() {
+			assertTrue(peopleBeginningWithP.containsAll(beginningWithP));
+		}
+		
+		@Test
+		public void shouldNotContainPeopleBeginningWithJ() {
+			assertFalse(peopleBeginningWithP.containsAll(beginningWithJ));
+		}
+		
+	}
+	
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class SubclassedActiveSetWithVarArgsParams {
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private PeopleContainingPaulAndJim peopleContainingPaulAndJim;
+		
+		private Set<Person> beginningWithP;
+		
+		private Set<Person> beginningWithJ;
+
+		@Before
+		public void context() {
+			
+			peopleContainingPaulAndJim = new PeopleContainingPaulAndJim(entityManagerFactory);
+			beginningWithP = new HashSet<Person>();
+			beginningWithJ = new HashSet<Person>();
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = jim();
+				peopleContainingPaulAndJim.add(person);
+				beginningWithJ.add(person);
+			}
+			
+			for(int i = 0; i < 10; i++) {
+				Person person = paul();
+				peopleContainingPaulAndJim.add(person);
+				beginningWithP.add(person);
+			}
+		}
+		
+		@Test
+		public void shouldContainPauls() {
+			assertTrue(peopleContainingPaulAndJim.containsAll(beginningWithP));
+		}
+		
+		@Test
+		public void shouldContainJims() {
+			assertFalse(peopleContainingPaulAndJim.containsAll(beginningWithJ));
+		}
+		
+		@Test
+		public void shouldHaveJimsOnly() {
+			assertFalse(peopleContainingPaulAndJim.jimOnly().containsAll(beginningWithP));
+		}
+		
+	}
+	
 	
 }
