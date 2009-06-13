@@ -1,8 +1,8 @@
 package com.googlecode.activecollections;
 
 import static com.googlecode.activecollections.ActiveSet.activeSet;
-import static com.googlecode.activecollections.PersonStubs.paul;
-import static com.googlecode.activecollections.PersonStubs.peter;
+import static com.googlecode.activecollections.examples.PersonStubs.paul;
+import static com.googlecode.activecollections.examples.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItemInArray;
@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
+import com.googlecode.activecollections.examples.Person;
 
 @RunWith(Enclosed.class)
 public class InMemoryActiveSetSpec {

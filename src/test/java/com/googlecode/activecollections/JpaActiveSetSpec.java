@@ -1,13 +1,13 @@
 package com.googlecode.activecollections;
 
 import static com.googlecode.activecollections.BeanPropertyParam.beanParam;
-import static com.googlecode.activecollections.PersonStubs.gabrial;
-import static com.googlecode.activecollections.PersonStubs.james;
-import static com.googlecode.activecollections.PersonStubs.jim;
-import static com.googlecode.activecollections.PersonStubs.mark;
-import static com.googlecode.activecollections.PersonStubs.paul;
-import static com.googlecode.activecollections.PersonStubs.pearson;
-import static com.googlecode.activecollections.PersonStubs.peter;
+import static com.googlecode.activecollections.examples.PersonStubs.gabrial;
+import static com.googlecode.activecollections.examples.PersonStubs.james;
+import static com.googlecode.activecollections.examples.PersonStubs.jim;
+import static com.googlecode.activecollections.examples.PersonStubs.mark;
+import static com.googlecode.activecollections.examples.PersonStubs.paul;
+import static com.googlecode.activecollections.examples.PersonStubs.pearson;
+import static com.googlecode.activecollections.examples.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -32,6 +32,13 @@ import org.junit.runner.RunWith;
 import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
+
+import com.googlecode.activecollections.examples.JpaPeople;
+import com.googlecode.activecollections.examples.PeopleBeginningWithP;
+import com.googlecode.activecollections.examples.PeopleContainingPaulAndJim;
+import com.googlecode.activecollections.examples.PeopleContainingPaulAndJimWithDisabledClause;
+import com.googlecode.activecollections.examples.Person;
+import com.googlecode.activecollections.matchers.OrderMatcher;
 
 @RunWith(Enclosed.class)
 public class JpaActiveSetSpec {

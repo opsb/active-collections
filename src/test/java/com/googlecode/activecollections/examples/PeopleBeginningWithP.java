@@ -1,6 +1,9 @@
-package com.googlecode.activecollections;
+package com.googlecode.activecollections.examples;
 
 import javax.persistence.EntityManagerFactory;
+
+import com.googlecode.activecollections.JpaActiveSet;
+import com.googlecode.activecollections.JpaClause;
 
 public class PeopleBeginningWithP extends JpaActiveSet<Person>{
 

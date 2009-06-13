@@ -1,10 +1,12 @@
 /**
  * 
  */
-package com.googlecode.activecollections;
+package com.googlecode.activecollections.examples;
 
 import java.util.Arrays;
 import java.util.List;
+
+import com.googlecode.activecollections.JpaClause;
 
 class JimAndPaulClause extends JpaClause {
 	

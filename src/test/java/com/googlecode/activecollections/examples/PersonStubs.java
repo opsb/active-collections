@@ -1,4 +1,4 @@
-package com.googlecode.activecollections;
+package com.googlecode.activecollections.examples;
 
 public class PersonStubs {
 
