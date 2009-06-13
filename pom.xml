@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.googlecode</groupId>
 	<artifactId>active-collections</artifactId>
@@ -211,8 +210,8 @@
 		</repository>
 	</repositories>
 	<scm>
-		<connection>scm:svn:https://active-collections.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/trunk</developerConnection>
-		<url>http://active-collections.googlecode.com/svn</url>
+		<connection>scm:svn:https://active-collections.googlecode.com/svn/tags/active-collections-0.8</connection>
+		<developerConnection>scm:svn:https://active-collections.googlecode.com/svn/tags/active-collections-0.8</developerConnection>
+		<url>http://active-collections.googlecode.com/svn/tags/active-collections-0.8</url>
 	</scm>
 </project>
