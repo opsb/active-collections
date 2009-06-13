@@ -9,7 +9,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
-import com.googlecode.activecollections.ActiveSet;
 import com.googlecode.activecollections.JpaActiveSet;
 
 public class SerializableActiveSetPostProcessor implements BeanPostProcessor, DisposableBean {
@@ -19,7 +18,7 @@ public class SerializableActiveSetPostProcessor implements BeanPostProcessor, Di
 	
 	public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
 
-		if (!(bean instanceof ActiveSet)) return bean; 
+		if (!(bean instanceof JpaActiveSet)) return bean; 
 		
 		try {
 			if(logger.isDebugEnabled()) {

@@ -53,7 +53,7 @@ public class JpaActiveSetSpec {
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
 
-		private ActiveSet<Person> people;
+		private JpaActiveSet<Person> people;
 
 		@Before
 		public void context() {
@@ -129,7 +129,7 @@ public class JpaActiveSetSpec {
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
 
-		private ActiveSet<Person> people;
+		private JpaActiveSet<Person> people;
 
 		@Before
 		public void context() {
@@ -222,7 +222,7 @@ public class JpaActiveSetSpec {
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
 
-		private ActiveSet<Person> people;
+		private JpaActiveSet<Person> people;
 
 		@Before
 		public void context() {
@@ -233,7 +233,7 @@ public class JpaActiveSetSpec {
 
 		@Test
 		public void shouldChainConditions() {
-			assertThat(people.where("name like ?", "%p%").where("id = ?", 1L), equalTo(ActiveSet.<Person>empty()));
+			assertTrue("Should be empty", people.where("name like ?", "%p%").where("id = ?", 1L).isEmpty());
 		}
 		
 		@Test
@@ -350,7 +350,7 @@ public class JpaActiveSetSpec {
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
 		
-		private ActiveSet<Person> filteredPeople;
+		private JpaActiveSet<Person> filteredPeople;
 		
 		private JpaPeople people;
 		

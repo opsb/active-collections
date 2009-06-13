@@ -36,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Transactional(propagation = Propagation.REQUIRED)
-public class JpaActiveSet<T> extends ActiveSet<T> {
+public class JpaActiveSet<T> implements Set<T> {
 
 	private final Logger logger = Logger.getLogger(JpaActiveSet.class);
 
@@ -268,7 +268,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return false;
 	}
 
-	@Override
 	public boolean addAll(Collection<? extends T> entities) {
 
 		for (T entity : entities) {
@@ -280,7 +279,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return hasAddedEntities;
 	}
 
-	@Override
 	public boolean addAll(T... entities) {
 		return addAll(Arrays.asList(entities));
 	}
@@ -384,7 +382,6 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return getAll().toArray();
 	}
 
-	@Override
 	public T first() {
 		Collection<T> all = getAll(1);
 		return all.isEmpty() ? null : all.iterator().next();
@@ -470,15 +467,14 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E where(String conditionsClause, Object... params) {
+	public <E extends JpaActiveSet<T>> E where(String conditionsClause, Object... params) {
 
 		return (E) where(new JpaClause(conditionsClause, params));
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends ActiveSet<T>> E where(JpaClause clause) {
+	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
 
 		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
 		combinedConditions.add(clause);
@@ -491,8 +487,7 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E join(String join) {
+	public <E extends JpaActiveSet<T>> E join(String join) {
 
 		JpaActiveSet<T> copy = copy();
 		copy.joinsClauses = new ArrayList<String>(this.joinsClauses);
@@ -502,14 +497,12 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E orderedBy(String orderClause) {
+	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
 		JpaActiveSet<T> copy = copy();
 		copy.orderClause = orderClause;
 		return (E) copy;
 	}
 
-	@Override
 	public T find(Long id) {
 
 		T finding = findOrNull(id);
@@ -520,28 +513,24 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends ActiveSet<T>> E find(List<Long> ids) {
+	public <E extends JpaActiveSet<T>> E find(List<Long> ids) {
 		return (E) where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
 	}
 
-	@Override
 	public T findOrNull(Long id) {
 		return getJpaTemplate().find(clazz, id);
 	}
 
-	@Override
 	public void save(T entity) {
 		add(entity);
 	}
 
-	@Override
 	public Integer pageSize() {
 		return pageSize;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends ActiveSet<T>> E pagesOf(Integer pageSize) {
+	public <E extends JpaActiveSet<T>> E pagesOf(Integer pageSize) {
 		if (pageSize == null)
 			return (E) this;
 		JpaActiveSet<T> copy = copy();
@@ -550,9 +539,8 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 		return (E) copy;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends ActiveSet<T>> E page(Integer page) {
+	public <E extends JpaActiveSet<T>> E page(Integer page) {
 		if (page == null)
 			return (E) this;
 		if (page < 1)
@@ -577,44 +565,38 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <E extends ActiveSet<T>> E all() {
+	protected <E extends JpaActiveSet<T>> E all() {
 		return (E) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <E extends ActiveSet<T>> E none() {
+	protected <E extends JpaActiveSet<T>> E none() {
 		return (E) where("true = false");
 	}
 
-	@Override
 	public Set<T> frozen() {
 		return new LinkedHashSet<T>(this);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends ActiveSet<T>> E in(Collection<T> entities) {
+	public <E extends JpaActiveSet<T>> E in(Collection<T> entities) {
 		if (entities == null || entities.isEmpty())
 			return (E) none();
 		return (E) where(getReferenceName() + " in (?)", entities);
 	}
 
-	@Override
 	public List<T> frozenList() {
 		return new ArrayList<T>(this);
 	}
 
-	@Override
 	public SortedSet<T> frozenSortedSet() {
 		return new TreeSet<T>(this);
 	}
 
-	@Override
 	public Set<T> frozenSet() {
 		return new HashSet<T>(this);
 	}
 
-	@Override
 	public Collection<T> refreshAll(Collection<T> staleEntities) {
 		if (CollectionUtils.isEmpty(staleEntities))
 			return staleEntities;
@@ -630,16 +612,14 @@ public class JpaActiveSet<T> extends ActiveSet<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E from(String from) {
+	public <E extends JpaActiveSet<T>> E from(String from) {
 		JpaActiveSet<T> copy = copy();
 		copy.fromClause = from;
 		return (E) copy;
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ActiveSet<T>> E select(String select) {
+	public <E extends JpaActiveSet<T>> E select(String select) {
 		JpaActiveSet<T> copy = copy();
 		copy.selectClause = select;
 		return (E) copy;
