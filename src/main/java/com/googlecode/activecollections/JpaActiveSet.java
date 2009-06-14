@@ -315,8 +315,6 @@ public class JpaActiveSet<T> implements Set<T> {
 				query.setParameter(entry.getKey(), (Date) value, TemporalType.TIMESTAMP);
 			} else if (value instanceof Calendar) {
 				query.setParameter(entry.getKey(), (Calendar) value, TemporalType.TIMESTAMP);
-			} else if (value instanceof DynamicParam) {
-				query.setParameter(entry.getKey(), ((DynamicParam) value).getParam());
 			} else {
 				query.setParameter(entry.getKey(), value);
 			}
