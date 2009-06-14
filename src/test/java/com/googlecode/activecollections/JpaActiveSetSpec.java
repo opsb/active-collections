@@ -516,10 +516,10 @@ public class JpaActiveSetSpec {
 		}
 		
 
-/*		@Test
+		@Test
 		public void shouldHaveNextPageContainingPaul() {
 			assertThat(pagedPeople.page(2).first().getName(), equalTo(paul().getName()));
-		}*/
+		}
 		
 		@Test(expected=IllegalArgumentException.class)
 		public void shouldNotAllowValuesLessThanOneAsPage() {
