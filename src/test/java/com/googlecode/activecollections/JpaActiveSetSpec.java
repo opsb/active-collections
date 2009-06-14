@@ -1,6 +1,5 @@
 package com.googlecode.activecollections;
 
-import static com.googlecode.activecollections.BeanPropertyParam.beanParam;
 import static com.googlecode.activecollections.examples.PersonStubs.gabrial;
 import static com.googlecode.activecollections.examples.PersonStubs.james;
 import static com.googlecode.activecollections.examples.PersonStubs.jim;
@@ -525,11 +524,6 @@ public class JpaActiveSetSpec {
 		@Test(expected=IllegalArgumentException.class)
 		public void shouldNotAllowValuesLessThanOneAsPage() {
 			pagedPeople.page(0);
-		}
-		
-		@Test
-		public void shouldPerformWhereUsingBeanPropertyParam() {
-			pagedPeople.where("name like ?", beanParam(jim(), "name"));
 		}
 		
 	}
