@@ -69,25 +69,31 @@ public class JpaActiveSet<T> implements Set<T> {
 	protected JpaActiveSet() {
 	}
 
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String orderClause,
-			JpaClause... conditions) {
-
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory,
+			String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, String orderClause) {
+		
 		Assert.notNull(entityManagerFactory,
-				"Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
+		"Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
 		Assert.notNull(clazz, "Must specify a class");
+		
+		this.clazz = clazz;
 		jpaDaoSupport = new JpaDaoSupport() {
 			{
 				setEntityManagerFactory(entityManagerFactory);
 			}
 		};
-		this.entityManagerFactory = entityManagerFactory;
-
-		this.clazz = clazz;
-
-		conditionsClauses.addAll(Arrays.asList(conditions));
-
+		this.selectClause = selectClause;
+		this.fromClause = fromClause;
+		this.joinsClauses = joins;
+		this.conditionsClauses = conditions;
 		this.orderClause = orderClause;
 		this.idField = getIdField(clazz);
+		
+	}
+	
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String orderClause,
+			JpaClause... conditions) {
+		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClause);
 	}
 
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
@@ -315,6 +321,8 @@ public class JpaActiveSet<T> implements Set<T> {
 				query.setParameter(entry.getKey(), (Date) value, TemporalType.TIMESTAMP);
 			} else if (value instanceof Calendar) {
 				query.setParameter(entry.getKey(), (Calendar) value, TemporalType.TIMESTAMP);
+			} else if (value instanceof DynaParam) {
+				query.setParameter(entry.getKey(), ((DynaParam) value).getValue());
 			} else {
 				query.setParameter(entry.getKey(), value);
 			}
