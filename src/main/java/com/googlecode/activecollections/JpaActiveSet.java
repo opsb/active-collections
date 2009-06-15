@@ -93,6 +93,10 @@ public class JpaActiveSet<T> implements Set<T> {
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
 		this(clazz, entityManagerFactory, "");
 	}
+	
+	public static <T extends Object> JpaActiveSet<T> activeSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
+		return new JpaActiveSet<T>(clazz, entityManagerFactory);
+	}
 
 	@SuppressWarnings("unchecked")
 	private <E extends JpaActiveSet<T>> E copy() {

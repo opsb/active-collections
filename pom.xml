@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.googlecode</groupId>
 	<artifactId>active-collections</artifactId>
@@ -178,31 +179,13 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<!--
-		<distributionManagement> <repository>
-		<uniqueVersion>false</uniqueVersion> <id>googlecode</id>
-		<url>svn:https://active-collections.googlecode.com/svn/repo</url>
-		</repository> </distributionManagement>
-	-->
-	<!-- 
 	<distributionManagement>
 		<repository>
-			<id>releases</id>
-			<url>dav:http://artifactory.nl.informatm.com/artifactory/libs-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<url>dav:http://artifactory.nl.informatm.com/artifactory/libs-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-	 -->
-	<distributionManagement>
-		<repository>
-			<id>releases</id>
+			<id>opsb-releases</id>
 			<url>http://opsb.co.uk/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
-			<id>snapshots</id>
+			<id>opsb-snapshots</id>
 			<url>http://opsb.co.uk/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
