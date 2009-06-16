@@ -412,12 +412,12 @@ public class JpaActiveSetSpec {
 		}
 		
 		@Test
-		public void filteredOutEntitiesCanNotBeRemoved() {
+		public void filteredOutEntitiesCanBeRemoved() {
 			
 			filteredPeople.remove(jim);
 			
 			assertFalse(filteredPeople.contains(jim));
-			assertTrue(people.contains(jim));
+			assertFalse(people.contains(jim));
 			
 		}
 		

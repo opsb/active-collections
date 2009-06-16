@@ -435,8 +435,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 		int sizeBefore = size();
 
-		if (contains(entity))
-			getJpaTemplate().remove(entity);
+		getJpaTemplate().remove(entity);
 
 		int sizeAfter = size();
 
