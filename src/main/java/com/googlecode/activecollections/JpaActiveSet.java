@@ -494,6 +494,13 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) copy;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E ignoring(JpaClause ignoredClause) {
+		JpaActiveSet<T> copy = copy();
+		copy.conditionsClauses.remove(ignoredClause);
+		return (E)copy;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E join(String join) {
