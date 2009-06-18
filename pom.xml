@@ -210,7 +210,6 @@
 	</repositories>
 	<scm>
 		<connection>scm:git:git://github.com/opsb/active-collections.git</connection>
-		<developerConnection>scm:git:git://github.com/opsb/active-collections.git</developerConnection>
 		<url>http://github.com/opsb/active-collections/tree/master</url>
 	</scm>
 </project>
