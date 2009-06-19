@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import static java.util.Arrays.*;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -599,6 +600,10 @@ public class JpaActiveSet<T> implements Set<T> {
 		if (entities == null || entities.isEmpty())
 			return (E) none();
 		return (E) where(getReferenceName() + " in (?)", entities);
+	}
+	
+	public <E extends JpaActiveSet<T>> E in(T ... entities) {
+		return in(asList(entities));
 	}
 
 	public List<T> frozenList() {
