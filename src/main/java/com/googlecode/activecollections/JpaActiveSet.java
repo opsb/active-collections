@@ -498,8 +498,12 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E ignoring(JpaClause ignoredClause) {
+		Assert.notNull( ignoredClause, "Clause to ignore was null" );
+		
 		JpaActiveSet<T> copy = copy();
-		copy.conditionsClauses.remove(ignoredClause);
+		if ( copy.conditionsClauses.remove(ignoredClause) == false) {
+			throw new IllegalArgumentException("This clause was not found: " + ignoredClause + " Actual clauses: " + conditionsClauses);
+		}
 		return (E)copy;
 	}
 
