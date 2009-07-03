@@ -606,8 +606,9 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) where(getReferenceName() + " in (?)", entities);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E in(T ... entities) {
-		return in(asList(entities));
+		return (E)in(asList(entities));
 	}
 
 	public List<T> frozenList() {
