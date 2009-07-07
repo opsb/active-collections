@@ -26,6 +26,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
@@ -617,6 +618,13 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	public SortedSet<T> frozenSortedSet() {
 		return new TreeSet<T>(this);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Set<T> frozenOrderedSet() {
+		ListOrderedSet orderedSet = new ListOrderedSet();
+		orderedSet.addAll(this);
+		return orderedSet;
 	}
 
 	public Set<T> frozenSet() {
