@@ -373,17 +373,8 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public int size() {
-		return ((Long) getJpaTemplate().execute(new JpaCallback() {
-
-			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(getSizeQuery());
-				addParamsTo(query);
-				addPagingTo(query, pageSize);
-				return query.getSingleResult();
-			}
-
-		})).intValue();
-
+		int total = total();
+		return total > pageSize ? pageSize : total;
 	}
 	
 	public int total() {
