@@ -330,6 +330,13 @@ public class JpaActiveSet<T> implements Set<T> {
 			}
 		}
 	}
+	
+	private void addPagingTo(Query query, int maxResults) {
+		if (isPaged()) {
+			query.setFirstResult((page - 1) * pageSize);
+			query.setMaxResults(maxResults);
+		}
+	}
 
 	public boolean containsAll(final Collection<? extends Object> entities) {
 
@@ -371,11 +378,24 @@ public class JpaActiveSet<T> implements Set<T> {
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getSizeQuery());
 				addParamsTo(query);
+				addPagingTo(query, pageSize);
 				return query.getSingleResult();
 			}
 
 		})).intValue();
 
+	}
+	
+	public int total() {
+		return ((Long)getJpaTemplate().execute(new JpaCallback() {
+
+			public Object doInJpa(EntityManager em) throws PersistenceException {
+				Query query = em.createQuery(getSizeQuery());
+				addParamsTo(query);
+				return query.getSingleResult();
+			}
+
+		})).intValue();
 	}
 
 	private String namePositionalParameters(String query) {
@@ -410,16 +430,9 @@ public class JpaActiveSet<T> implements Set<T> {
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getAllQuery());
 				addParamsTo(query);
-				addPagingTo(query);
+				addPagingTo(query, maxResults);
 
 				return query.getResultList();
-			}
-
-			private void addPagingTo(Query query) {
-				if (isPaged()) {
-					query.setFirstResult((page - 1) * pageSize);
-					query.setMaxResults(maxResults);
-				}
 			}
 
 		});
