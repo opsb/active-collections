@@ -3,7 +3,7 @@
 	<groupId>com.googlecode</groupId>
 	<artifactId>active-collections</artifactId>
 	<packaging>jar</packaging>
-	<version>0.12</version>
+	<version>0.13-SNAPSHOT</version>
 	<name>active-collections</name>
 	<url>http://maven.apache.org</url>
 	<properties>
