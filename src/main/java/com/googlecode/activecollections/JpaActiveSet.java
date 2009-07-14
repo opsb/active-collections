@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
 
-	private final Logger logger = Logger.getLogger(JpaActiveSet.class);
+	private Logger logger = Logger.getLogger(JpaActiveSet.class);
 
 	private static final String NO_ORDER_SPECIFIED = "";
 
@@ -168,26 +168,26 @@ public class JpaActiveSet<T> implements Set<T> {
 	private String getRetainAllQuery() {
 		String retainAllQuery = buildQuery(getDeleteClause(), " where " + getReferenceName() + " not in (:entities)"
 				+ getAndClause(), NO_ORDER_SPECIFIED);
-		logger.debug("retainAll query: " + retainAllQuery);
+		getLogger().debug("retainAll query: " + retainAllQuery);
 		return retainAllQuery;
 	}
 
 	private String getContainsAllQuery() {
 		String containsAllQuery = buildQuery(getSelectCountClause(), " where " + getReferenceName() + " in (:entities)"
 				+ getAndClause(), NO_ORDER_SPECIFIED);
-		logger.debug("containsAll query: " + containsAllQuery);
+		getLogger().debug("containsAll query: " + containsAllQuery);
 		return containsAllQuery;
 	}
 
 	private String getAllQuery() {
 		String getAllQuery = buildQuery(getSelectClause(), getWhereClause(), getOrderClause());
-		logger.debug("getAll query: " + getAllQuery);
+		getLogger().debug("getAll query: " + getAllQuery);
 		return getAllQuery;
 	}
 
 	private String getSizeQuery() {
 		String sizeQuery = buildQuery(getSelectCountClause(), getWhereClause(), NO_ORDER_SPECIFIED);
-		logger.debug("size query: " + sizeQuery);
+		getLogger().debug("size query: " + sizeQuery);
 		return sizeQuery;
 	}
 
@@ -309,7 +309,7 @@ public class JpaActiveSet<T> implements Set<T> {
 				addUniqueParam(params, param);
 			}
 		}
-		logger.debug("Using params: " + params);
+		getLogger().debug("Using params: " + params);
 		return params;
 	}
 
@@ -670,6 +670,10 @@ public class JpaActiveSet<T> implements Set<T> {
 		JpaActiveSet<T> copy = copy();
 		copy.selectClause = select;
 		return (E) copy;
+	}
+	
+	protected Logger getLogger() {
+		return logger;
 	}
 
 }
