@@ -131,6 +131,8 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private <E extends JpaActiveSet<T>> void addMeta(E copy) {
 
+		Assert.notNull(this.conditionsClauses);
+		
 		copy.clazz = clazz;
 		copy.fromClause = fromClause;
 		copy.selectClause = selectClause;
@@ -490,7 +492,9 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
-
+		Assert.notNull(clause, "Clause was null");
+		Assert.notNull(this.conditionsClauses, "Conditions clauses are null");
+		
 		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
 		combinedConditions.add(clause);
 
@@ -515,6 +519,8 @@ public class JpaActiveSet<T> implements Set<T> {
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E join(String join) {
 
+		Assert.notNull(join, "Join was null");
+		
 		JpaActiveSet<T> copy = copy();
 		copy.joinsClauses = new ArrayList<String>(this.joinsClauses);
 		copy.joinsClauses.add(join);
@@ -524,6 +530,9 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
+		
+		Assert.notNull(orderClause, "Order clause was null");
+		
 		JpaActiveSet<T> copy = copy();
 		copy.orderClause = orderClause;
 		return (E) copy;
