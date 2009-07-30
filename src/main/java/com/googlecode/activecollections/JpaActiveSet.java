@@ -439,11 +439,19 @@ public class JpaActiveSet<T> implements Set<T> {
 		return getAll().toArray(a);
 	}
 
-	public boolean remove(Object entity) {
+	public boolean remove(final Object entity) {
 
 		int sizeBefore = size();
 
-		getJpaTemplate().remove(entity);
+		getJpaTemplate().execute(new JpaCallback() {
+
+			public Object doInJpa(EntityManager em) throws PersistenceException {
+				Object condemned = em.find(clazz, getId(entity));
+				em.remove(condemned);
+				return null;
+			}
+			
+		});
 
 		int sizeAfter = size();
 
