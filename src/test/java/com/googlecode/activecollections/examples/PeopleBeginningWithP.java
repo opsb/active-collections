@@ -10,7 +10,7 @@ public class PeopleBeginningWithP extends JpaActiveSet<Person>{
 	PeopleBeginningWithP() {}
 	
 	public PeopleBeginningWithP(EntityManagerFactory entityManagerFactory) {
-		super(Person.class, entityManagerFactory, "", new JpaClause() {
+		super(Person.class, entityManagerFactory, null, new JpaClause() {
 			@Override
 			public String getJpa() {
 				return "person.name like 'P%'";

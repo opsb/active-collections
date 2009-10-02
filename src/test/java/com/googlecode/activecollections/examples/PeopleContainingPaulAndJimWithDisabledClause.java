@@ -10,7 +10,7 @@ public class PeopleContainingPaulAndJimWithDisabledClause extends JpaActiveSet<P
 	PeopleContainingPaulAndJimWithDisabledClause() {}
 	
 	public PeopleContainingPaulAndJimWithDisabledClause(EntityManagerFactory entityManagerFactory) {
-		super(Person.class, entityManagerFactory, "", new JimAndPaulClause(false));
+		super(Person.class, entityManagerFactory, null, new JimAndPaulClause(false));
 	}
 	
 	public PeopleContainingPaulAndJimWithDisabledClause jimOnly() {

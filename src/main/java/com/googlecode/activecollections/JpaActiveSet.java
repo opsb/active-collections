@@ -8,6 +8,7 @@ import java.util.Arrays;
 import static java.util.Arrays.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private List<JpaClause> conditionsClauses = new ArrayList<JpaClause>();
 
-	private String orderClause;
+	private List<String> orderClauses;
 
 	protected EntityManagerFactory entityManagerFactory;
 
@@ -72,7 +73,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory,
-			String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, String orderClause) {
+			String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, List<String> orderClauses) {
 		
 		Assert.notNull(entityManagerFactory,
 		"Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
@@ -88,18 +89,18 @@ public class JpaActiveSet<T> implements Set<T> {
 		this.fromClause = fromClause;
 		this.joinsClauses = joins;
 		this.conditionsClauses = conditions;
-		this.orderClause = orderClause;
+		this.orderClauses = orderClauses;
 		this.idField = getIdField(clazz);
 		
 	}
 	
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, String orderClause,
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, List<String> orderClauses,
 			JpaClause... conditions) {
-		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClause);
+		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClauses);
 	}
 
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this(clazz, entityManagerFactory, "");
+		this(clazz, entityManagerFactory, new ArrayList<String>());
 	}
 	
 	public static <T extends Object> JpaActiveSet<T> activeSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
@@ -137,7 +138,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		copy.fromClause = fromClause;
 		copy.selectClause = selectClause;
 		copy.conditionsClauses = new ArrayList<JpaClause>(this.conditionsClauses);
-		copy.orderClause = orderClause;
+		copy.orderClauses = orderClauses;
 		copy.joinsClauses = new ArrayList<String>(joinsClauses);
 		copy.idField = getIdField(clazz);
 		copy.page = page;
@@ -192,7 +193,12 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private String getOrderClause() {
-		return orderClause == null || orderClause.length() == 0 ? "" : " order by " + orderClause;
+		if(orderClauses == null || orderClauses.size() <= 0) return "";
+		
+		StringBuilder orderClause = new StringBuilder(" order by ");
+		orderClause.append( StringUtils.collectionToCommaDelimitedString(orderClauses) );
+		
+		return orderClause.toString();
 	}
 
 	private String buildQuery(String operationClause, String whereClause, String orderClause) {
@@ -542,7 +548,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull(orderClause, "Order clause was null");
 		
 		JpaActiveSet<T> copy = copy();
-		copy.orderClause = orderClause;
+		copy.orderClauses.add(orderClause);
 		return (E) copy;
 	}
 

@@ -3,6 +3,8 @@ package com.googlecode.activecollections;
 import static com.googlecode.activecollections.examples.PersonStubs.gabrial;
 import static com.googlecode.activecollections.examples.PersonStubs.james;
 import static com.googlecode.activecollections.examples.PersonStubs.jim;
+import static com.googlecode.activecollections.examples.PersonStubs.jim_carrey;
+import static com.googlecode.activecollections.examples.PersonStubs.jim_cramer;
 import static com.googlecode.activecollections.examples.PersonStubs.mark;
 import static com.googlecode.activecollections.examples.PersonStubs.paul;
 import static com.googlecode.activecollections.examples.PersonStubs.pearson;
@@ -340,6 +342,8 @@ public class JpaActiveSetSpec {
 		private static final Date BIRTHDAY = new GregorianCalendar(2004, 7, 3).getTime();
 		
 		private Person jim = jim();
+		private Person jim_cramer = jim_cramer();
+		private Person jim_carrey = jim_carrey();
 		private Person paul = new Person("Paul", BIRTHDAY);
 		private Person peter = peter();
 		private Person james = james();
@@ -358,7 +362,9 @@ public class JpaActiveSetSpec {
 			
 			people = new JpaPeople(entityManagerFactory);
 			
+			people.add(jim_cramer);
 			people.add(jim);
+			people.add(jim_carrey);
 			people.add(paul);
 			people.add(peter);
 			people.add(james);
@@ -456,6 +462,10 @@ public class JpaActiveSetSpec {
 			assertThat(filteredPeople.orderedBy("name"), OrderMatcher.orderedSameAs(asList(paul, peter)));
 		}
 		
+		@Test
+		public void shouldBeAbleToMultipleOrder() {
+			assertThat(people.orderedBy("name").orderedBy("surname"), OrderMatcher.orderedSameAs(asList(james, jim, jim_carrey, jim_cramer, paul, peter)));
+		}
 
 		@Test
 		public void shouldBeAbleToOrderDescending() {
@@ -473,7 +483,6 @@ public class JpaActiveSetSpec {
 		}
 		
 	}
-
 
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
 	@SpringApplicationContext("spring-context.xml")

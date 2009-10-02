@@ -18,6 +18,14 @@ public class PersonStubs {
 		return new Person("Jim");
 	}
 	
+	public static Person jim_carrey() {
+		return new Person("Jim", "carrey");
+	}
+	
+	public static Person jim_cramer() {
+		return new Person("Jim", "cramer");
+	}
+	
 	public static Person james() {
 		return new Person("James");
 	}

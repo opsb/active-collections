@@ -10,7 +10,7 @@ public class PeopleContainingPaulAndJim extends JpaActiveSet<Person> {
 	PeopleContainingPaulAndJim() {}
 	
 	public PeopleContainingPaulAndJim(EntityManagerFactory entityManagerFactory) {
-		super(Person.class, entityManagerFactory, "", new JimAndPaulClause(true));
+		super(Person.class, entityManagerFactory, null, new JimAndPaulClause(true));
 	}
 	
 	public PeopleContainingPaulAndJim jimOnly() {
