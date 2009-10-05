@@ -55,7 +55,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private List<JpaClause> conditionsClauses = new ArrayList<JpaClause>();
 
-	private List<String> orderClauses;
+	private List<String> orderClauses = new ArrayList<String>();
 
 	protected EntityManagerFactory entityManagerFactory;
 
@@ -89,7 +89,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		this.fromClause = fromClause;
 		this.joinsClauses = joins;
 		this.conditionsClauses = conditions;
-		this.orderClauses = orderClauses;
+		if(orderClauses != null) this.orderClauses = orderClauses;
 		this.idField = getIdField(clazz);
 		
 	}
@@ -138,7 +138,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		copy.fromClause = fromClause;
 		copy.selectClause = selectClause;
 		copy.conditionsClauses = new ArrayList<JpaClause>(this.conditionsClauses);
-		copy.orderClauses = orderClauses;
+		copy.orderClauses = new ArrayList<String>(orderClauses);
 		copy.joinsClauses = new ArrayList<String>(joinsClauses);
 		copy.idField = getIdField(clazz);
 		copy.page = page;
@@ -548,8 +548,6 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull(orderClause, "Order clause was null");
 		
 		JpaActiveSet<T> copy = copy();
-		
-		if(copy.orderClauses == null) copy.orderClauses = new ArrayList<String>();
 		
 		copy.orderClauses.add(orderClause);
 		return (E) copy;
