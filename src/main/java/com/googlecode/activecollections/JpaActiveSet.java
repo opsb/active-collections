@@ -1,14 +1,14 @@
 package com.googlecode.activecollections;
 
+import static java.util.Arrays.asList;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static java.util.Arrays.*;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -548,6 +548,9 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull(orderClause, "Order clause was null");
 		
 		JpaActiveSet<T> copy = copy();
+		
+		if(copy.orderClauses == null) copy.orderClauses = new ArrayList<String>();
+		
 		copy.orderClauses.add(orderClause);
 		return (E) copy;
 	}
