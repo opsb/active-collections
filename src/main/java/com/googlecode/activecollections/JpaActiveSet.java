@@ -212,7 +212,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	private String getJoinClause() {
 		if (joinsClauses.isEmpty())
 			return "";
-		return " join " + StringUtils.collectionToDelimitedString(joinsClauses, " join ") + " ";
+		return " " + StringUtils.collectionToDelimitedString(joinsClauses, " ");
 	}
 
 	private String getWhereClause() {
@@ -530,18 +530,35 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E)copy;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E join(String join) {
-
-		Assert.notNull(join, "Join was null");
-		
+	private JpaActiveSet<T> buildJoinClause(String joinType, String joinClause) {
 		JpaActiveSet<T> copy = copy();
 		copy.joinsClauses = new ArrayList<String>(this.joinsClauses);
-		copy.joinsClauses.add(join);
+		copy.joinsClauses.add(joinType + " " + joinClause);
+		
+		return copy;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E join(String join) {
+		Assert.notNull(join, "Join was null");
 
-		return (E) copy;
+		return (E) buildJoinClause("join", join);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E leftOuterJoin(String join) {
+		Assert.notNull(join, "Left outer join was null");
+
+		return (E) buildJoinClause("left outer join" , join);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E rightOuterJoin(String join) {
+		Assert.notNull(join, "Right outer join was null");
+
+		return (E) buildJoinClause("right outer join", join);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E orderedBy(String orderClause) {
 		
@@ -687,8 +704,11 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) copy;
 	}
 	
+	public <E extends JpaActiveSet<T>> E distinct() {
+		return select("distinct");
+	}
+	
 	protected Logger getLogger() {
 		return logger;
 	}
-
 }

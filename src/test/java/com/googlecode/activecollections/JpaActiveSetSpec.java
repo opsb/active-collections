@@ -18,6 +18,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -34,6 +37,7 @@ import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
+import com.googlecode.activecollections.examples.Address;
 import com.googlecode.activecollections.examples.JpaPeople;
 import com.googlecode.activecollections.examples.PeopleBeginningWithP;
 import com.googlecode.activecollections.examples.PeopleContainingPaulAndJim;
@@ -629,9 +633,6 @@ public class JpaActiveSetSpec {
 		public void shouldHaveJimsOnly() {
 			assertFalse(peopleContainingPaulAndJim.jimOnly().containsAll(beginningWithP));
 		}
-		
-		
-		
 	}
 	
 
@@ -691,9 +692,52 @@ public class JpaActiveSetSpec {
 		public void shouldHaveJimsOnly() {
 			assertFalse(peopleContainingPaulAndJim.jimOnly().containsAll(beginningWithP));
 		}
-		
-		
-		
 	}
 	
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class WithJoins {
+		
+		private Person peter = peter();
+		private Person jim = jim();
+		private Person paul = paul();
+		private Address eastStreet = new Address("East Street", 5);
+		private Address westStreet = new Address("West Street", 10);
+		private Address crazyStreet = new Address("Crazy Street", 12);
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private JpaPeople people;
+		
+		private JpaActiveSet<Address> addresses;
+		
+		@Before
+		public void context() {
+			people = new JpaPeople(entityManagerFactory);
+			addresses = new JpaActiveSet<Address>(Address.class, entityManagerFactory);
+			
+			addresses.addAll(eastStreet, westStreet, crazyStreet);
+			
+			peter.setAddresses(asList(eastStreet, westStreet));
+			jim.setAddresses(asList(eastStreet));		
+			people.addAll(peter, jim, paul);
+		}
+		
+		@Test
+		public void everyOneWhoLivesOnEastStreet() {
+			assertThat(people.join("person.addresses address").where("address.street = ?", "East Street"), Matchers.hasItems(peter, jim));
+		}
+		
+		@Test
+		public void shouldDoLeftOuterJoin() {
+			assertThat(people.leftOuterJoin("person.addresses address").size(), equalTo(4));
+		}
+		
+		@Test
+		public void shouldDoRightOuterJoin() {
+			assertThat(people.rightOuterJoin("person.addresses address").size(), equalTo(3));
+		}
+		
+	}
 }

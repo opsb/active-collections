@@ -1,10 +1,14 @@
 package com.googlecode.activecollections.examples;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +27,9 @@ public class Person {
 
 	private Date birthday;
 	
+	@ManyToMany(cascade = {CascadeType.ALL})
+	private List<Address> addresses;
+	
 	@SuppressWarnings("unused")
 	private Person() {} // Required by JPA
 
@@ -31,13 +38,22 @@ public class Person {
 	}
 	
 	public Person(String name, Date birthday) {
-		this.name = name;
-		this.birthday = birthday;
+		this(name, "", birthday, new ArrayList<Address>());	
 	}
 	
 	public Person(String name, String surname) {
-		this(name);
+		this(name, surname, new Date(), new ArrayList<Address>());
+	}
+	
+	public Person(String name, String surname, List<Address> addresses) {
+		this(name, surname, new Date(), addresses);
+	}
+	
+	private Person(String name, String surname, Date birthday, List<Address> addresses) {
+		this.name = name;
 		this.surname = surname;
+		this.birthday = birthday;
+		this.addresses = addresses;
 	}
 	
 	public Long getId() {
@@ -50,6 +66,18 @@ public class Person {
 	
 	public String getSurname() {
 		return surname;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+	
+	public List<Address> getAddresses() {
+		return addresses;
+	}
+	
+	public void setAddresses(List<Address> addresses) {
+		this.addresses = addresses;
 	}
 	
 	@Override
@@ -77,14 +105,10 @@ public class Person {
 		return true;
 	}
 
-	public Date getBirthday() {
-		return birthday;
-	}
 	
 	@Override
 	public String toString() {
-		return "Person [birthday=" + birthday + ", id=" + id + ", name=" + name
-				+ ", surname=" + surname + "]";
+		return "Person [birthday=" + birthday + ", id=" + id + ", name=" + name + ", surname=" + surname + "]";
 	}
 
 }
