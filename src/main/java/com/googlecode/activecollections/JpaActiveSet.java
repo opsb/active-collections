@@ -704,8 +704,9 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) copy;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E distinct() {
-		return select("distinct");
+		return (E)select("distinct");
 	}
 	
 	protected Logger getLogger() {
