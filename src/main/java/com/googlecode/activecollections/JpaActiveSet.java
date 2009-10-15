@@ -706,7 +706,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E distinct() {
-		return (E)select("distinct");
+		return (E)select("distinct " + getReferenceName());
 	}
 	
 	protected Logger getLogger() {
