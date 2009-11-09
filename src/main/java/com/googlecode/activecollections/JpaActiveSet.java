@@ -419,8 +419,12 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private List<T> getAll() {
-		return getAll(pageSize);
+		List<T> all = getAll(pageSize);
+		for(T entity : getAll(pageSize)) afterLoad(entity);
+		return all;
 	}
+	
+	protected void afterLoad(T entity) {}
 
 	@SuppressWarnings("unchecked")
 	private List<T> getAll(final int maxResults) {
