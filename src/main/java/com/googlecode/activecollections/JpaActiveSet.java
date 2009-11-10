@@ -419,16 +419,14 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private List<T> getAll() {
-		List<T> all = getAll(pageSize);
-		for(T entity : getAll(pageSize)) afterLoad(entity);
-		return all;
+		return getAll(pageSize);
 	}
 	
 	protected void afterLoad(T entity) {}
 
 	@SuppressWarnings("unchecked")
 	private List<T> getAll(final int maxResults) {
-		return getJpaTemplate().executeFind(new JpaCallback() {
+		List<T> all = getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getAllQuery());
@@ -439,6 +437,10 @@ public class JpaActiveSet<T> implements Set<T> {
 			}
 
 		});
+		
+		for(T entity : all) afterLoad(entity);
+		return all;
+		
 	}
 
 	private boolean isPaged() {
