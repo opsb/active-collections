@@ -587,6 +587,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E find(List<Long> ids) {
+		if (ids.isEmpty()) return none();
 		return (E) where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
 	}
 

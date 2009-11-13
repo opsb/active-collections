@@ -16,6 +16,7 @@ public class SerializableActiveSetPostProcessor implements BeanPostProcessor, Di
 	private final Logger logger = Logger.getLogger(JpaActiveSet.class);
 	static ApplicationContext applicationContext;
 	
+	@SuppressWarnings("unchecked")
 	public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
 
 		if (!(bean instanceof JpaActiveSet)) return bean; 
