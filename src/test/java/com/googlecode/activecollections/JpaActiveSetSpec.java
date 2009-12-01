@@ -66,17 +66,17 @@ public class JpaActiveSetSpec {
 
 		@Test
 		public void canAddNewPerson() {
-
-			people.add(PAUL);
+			boolean add = people.add(PAUL);
 			assertThat(people.size(), equalTo(1));
-
+			assertTrue(add);
 		}
 
 		@Test
 		public void canUpdatePerson() {
 			people.add(PAUL);
-			people.add(PAUL);
+			boolean add = people.add(PAUL);
 			assertThat(people.size(), equalTo(1));
+			assertFalse(add);
 		}
 
 		@Test

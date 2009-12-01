@@ -282,10 +282,11 @@ public class JpaActiveSet<T> implements Set<T> {
 	public boolean add(T entity) {
 		if (isPersisted(entity)) {
 			getJpaTemplate().merge(entity);
+			return false;
 		} else {
 			getJpaTemplate().persist(entity);
+			return true;
 		}
-		return false;
 	}
 
 	public boolean addAll(Collection<? extends T> entities) {
