@@ -577,7 +577,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) copy;
 	}
 
-	public T find(Long id) {
+	public T find(Object id) {
 
 		T finding = findOrNull(id);
 		if (finding == null)
@@ -587,12 +587,12 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E find(List<Long> ids) {
+	public <E extends JpaActiveSet<T>> E find(Collection<? extends Object> ids) {
 		if (ids.isEmpty()) return (E)none();
 		return (E) where(getReferenceName() + "." + getIdReferenceName() + " in (?)", ids);
 	}
 
-	public T findOrNull(Long id) {
+	public T findOrNull(Object id) {
 		return getJpaTemplate().find(clazz, id);
 	}
 
