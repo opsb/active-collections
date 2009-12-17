@@ -68,6 +68,10 @@ public class JpaActiveSet<T> implements Set<T> {
 	private String fromClause;
 
 	private String selectClause;
+	
+	private boolean isDistinct;
+
+	private List<String> columns;
 
 	protected JpaActiveSet() {
 	}
@@ -91,6 +95,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		this.conditionsClauses = conditions;
 		if(orderClauses != null) this.orderClauses = orderClauses;
 		this.idField = getIdField(clazz);
+		this.isDistinct = false;
 		
 	}
 	
@@ -151,7 +156,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private String getSelectClause() {
-		return "select " + (selectClause == null ? getReferenceName() : selectClause);
+		return "select " + (isDistinct? "distinct" : "") + (selectClause == null ? getReferenceName() : selectClause);
 	}
 
 	private String getSelectCountClause() {
@@ -712,12 +717,24 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) copy;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E distinct() {
-		return (E)select("distinct " + getReferenceName());
+		E clone = copy();
+		clone.isDistinct = true;
+		return clone;
 	}
 	
 	protected Logger getLogger() {
 		return logger;
+	}
+ 
+	public <C> Set<C> reducedTo(String column) {
+		Assert.hasText(column, "Column name was blank");
+		return new JpaColumnSet<T,C>(column, this);
+	}
+	
+	public <E extends JpaActiveSet<T>> E columns(String ... columns) {
+		E clone = copy();
+		clone.columns = Arrays.asList(columns);
+		return clone;
 	}
 }

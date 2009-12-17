@@ -312,6 +312,11 @@ public class JpaActiveSetSpec {
 			assertThat(people.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
 		}
 		
+		@Test
+		public void shouldReduceToColumn() {
+			Set<String> names = people.reducedTo("title");
+			assertThat(names, OrderMatcher.orderedSameAs(asList("paul","peter")));
+		}
 	}
 	
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
