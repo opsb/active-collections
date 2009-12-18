@@ -38,6 +38,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.googlecode.activecollections.examples.Addresses;
+
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
 
@@ -216,10 +218,10 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private String getWhereClause() {
-		return enabledConditionsClauses().isEmpty() ? "" : " where " + getConditionsClause();
+		return getConditions().isEmpty() ? "" : " where " + getConditionsClause();
 	}
 
-	private List<JpaClause> enabledConditionsClauses() {
+	public List<JpaClause> getConditions() {
 		List<JpaClause> enabled = new ArrayList<JpaClause>();
 		for(JpaClause clause : conditionsClauses) {
 			if (clause.isEnabled()) {
@@ -233,7 +235,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 		List<String> clauses = new ArrayList<String>();
 
-		for (JpaClause clause : enabledConditionsClauses()) {
+		for (JpaClause clause : getConditions()) {
 				clauses.add(clause.getJpa());
 		}
 
@@ -242,7 +244,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	private String getAndClause() {
-		return enabledConditionsClauses().isEmpty() ? "" : " and " + getConditionsClause();
+		return getConditions().isEmpty() ? "" : " and " + getConditionsClause();
 	}
 
 	protected JpaTemplate getJpaTemplate() {
@@ -310,7 +312,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private Map<String, Object> buildParams() {
 		Map<String, Object> params = new HashMap<String, Object>();
-		for (JpaClause conditionClause : enabledConditionsClauses()) {
+		for (JpaClause conditionClause : getConditions()) {
 			params.putAll(conditionClause.getNamedParams());
 			for (Object param : conditionClause.getPositionalParams()) {
 				addUniqueParam(params, param);
@@ -511,6 +513,18 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	}
 
+	public <E extends JpaActiveSet<T>> E where(List<JpaClause> clauses) {
+		Assert.notNull(clauses, "Conditions clauses are null");
+		
+		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
+		combinedConditions.addAll(clauses);
+
+		JpaActiveSet<T> copy = copy();
+		copy.conditionsClauses = combinedConditions;
+
+		return (E) copy;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
 		Assert.notNull(clause, "Clause was null");
@@ -704,7 +718,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		copy.fromClause = from;
 		return (E) copy;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E select(String select) {
 		JpaActiveSet<T> copy = copy();
@@ -720,4 +734,5 @@ public class JpaActiveSet<T> implements Set<T> {
 	protected Logger getLogger() {
 		return logger;
 	}
+
 }

@@ -17,4 +17,9 @@ public class JpaPeople extends JpaActiveSet<Person> {
 		return where("name like ?", name);
 	}
 	
+	public JpaPeople with(Addresses addresses) {
+		return join("person.addresses address")
+				.where(addresses.getConditions());
+	}
+	
 }

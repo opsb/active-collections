@@ -36,6 +36,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
 import com.googlecode.activecollections.examples.Address;
+import com.googlecode.activecollections.examples.Addresses;
 import com.googlecode.activecollections.examples.JpaPeople;
 import com.googlecode.activecollections.examples.PeopleBeginningWithP;
 import com.googlecode.activecollections.examples.PeopleContainingPaulAndJim;
@@ -225,11 +226,14 @@ public class JpaActiveSetSpec {
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;
 
-		private JpaActiveSet<Person> people;
+		private JpaPeople people;
+		
+		private Addresses addresses;
 
 		@Before
 		public void context() {
 			people = new JpaPeople(entityManagerFactory);
+			addresses = new Addresses(entityManagerFactory);
 			people.add(PETER);
 			people.add(PAUL);
 		}
@@ -310,6 +314,12 @@ public class JpaActiveSetSpec {
 		@Test
 		public void shouldBeAbleToOrderDescending() {
 			assertThat(people.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
+		}
+		
+		
+		@Test
+		public void shouldFilterByOtherSet() {
+			assertThat(people.with(addresses.inLondon()), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
 		}
 		
 	}
@@ -699,9 +709,9 @@ public class JpaActiveSetSpec {
 		private Person peter = peter();
 		private Person jim = jim();
 		private Person paul = paul();
-		private Address eastStreet = new Address("East Street", 5);
-		private Address westStreet = new Address("West Street", 10);
-		private Address crazyStreet = new Address("Crazy Street", 12);
+		private Address eastStreet = new Address("East Street", 5, "London");
+		private Address westStreet = new Address("West Street", 10, "London");
+		private Address crazyStreet = new Address("Crazy Street", 12, "London");
 		
 		@SpringBeanByType
 		private EntityManagerFactory entityManagerFactory;

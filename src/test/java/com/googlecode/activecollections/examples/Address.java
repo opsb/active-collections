@@ -16,13 +16,16 @@ public class Address {
 	private String street;
 	
 	private int number;
+	
+	private String city;
 		
 	@SuppressWarnings("unused")
 	private Address() {} // Required by JPA
 
-	public Address(String street, int number) {
+	public Address(String street, int number, String city) {
 		this.street = street;
 		this.number = number;
+		this.city = city;
 	}
 	
 	public Long getId() {
