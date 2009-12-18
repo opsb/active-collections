@@ -124,6 +124,45 @@ They just work. You don't have to worry about telling JPA that they are time bas
 #### Collections as parameters using ?
 They also just work. JPA will not normally allow you to use Collections as parameters when you're using the ? syntax. It does however work with named parameters. Behind the scenes JpaActiveSet actually converts all ?s into named parameters so you're able to use Collections as parameters with the ? syntax.
 
+### Philosophy and evaluation strategy - JpaActiveSets are proxies onto database tables
+If you've been checking your log you'll find that a call such as 
+
+    Articles orderedByNamePageOne = articles.orderedBy("name DESC").pagesOf(20).page(1)
+    
+doesn't actually query the database. The query isn't triggered until you try and use the articles in the Set. 
+
+    for(Article article : orderedByNamePageOne) {
+      System.out.println(article.getName());
+    }
+    
+Once you do this you'll see that the query is made to the database. So what's triggering it? To understand that you need to know how the for loop works. When the for loop is compiled it actually get's converted into something like this.
+
+    Iterator<Article> iter = orderedByNamePageOne.iterator();
+    while(iter.hasNext()) {
+      Article article = iter.next();
+      
+      // body of for loop
+      System.out.println(article.getName());      
+      // end of for loop body
+    }
+    
+The crucial line is the first one, that call to .iterator() is what triggers the query to the database. All of the querying methods on a JpaActiveSet behave in the same way. It's important to understand this, consider the following.
+
+    Articles filtered = articles.beginningWith("P").publishedThisWeek();
+    
+    0 == filtered.total();
+    articles.add(articlePublishedThisWeekBeginningWithP);
+    1 == filtered.total();
+    
+The crucial point here is that JpaActiveSets are always proxies onto the database. The results of any of the querying methods always reflect the current state of the database, not the state when the filtering was created.
+
+### Freezing
+By default JpaActiveSets are always evaluated against the db _every_ time you use a method. You might want to freeze the results, in which case these are for you.
+
+    Set<Article> frozenSet = articles.frozen();
+    List<Article> frozenList = articles.frozenList();
+    SortedSet<Article> frozenSortedSet = articles.frozenSortedSet();
+    Set<Article> orderedSet = articles.frozenOrderedSet();
 
 ### Logging
 The logging framework is log4j. By setting the logger level for com.googlecode.activecollections.JpaActiveSet you can view the jpa queries as they're executed.
@@ -143,14 +182,6 @@ Sometimes you only want logging from one of your JpaActiveSets. Taking Articles 
     }
 
 now when you switch on logging for Articles you'll see all of the JPA queries that JpaActiveSet is executing.
-
-### Freezing
-By default JpaActiveSets are always evaluated against the db _every_ time you use a method. You might want to freeze the results, in which case these are for you.
-
-    Set<Article> frozenSet = articles.frozen();
-    List<Article> frozenList = articles.frozenList();
-    SortedSet<Article> frozenSortedSet = articles.frozenSortedSet();
-    Set<Article> orderedSet = articles.frozenOrderedSet();
   
 ### Testing    
 #### Mocking JpaActiveSets for testing
