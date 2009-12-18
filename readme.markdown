@@ -83,7 +83,7 @@ Notice that many of these methods return an object of type Articles. This allows
     Articles orderedByNamePageOne = articles.orderedBy("name DESC").pagesOf(20).page(1)
 
 ### Filtering
-active-collections allows you to define custom filtering criteria, let's extend our Article implementation.
+active-collections allows you to define custom filtering criteria, let's extend our Article implementation. We're going to take advantage of the where(jpaFragment, param1, param2, ...) method. JpaActiveSet makes an alias available for you so that you can just refer to the entity easily. The convention is that the alias is the lowercase name of the entity, in this example "article".
 
     public class Articles extends JpaActiveSet<Article> {
 
