@@ -157,7 +157,7 @@ The crucial line is the first one, that call to .iterator() is what triggers the
 The crucial point here is that JpaActiveSets are always proxies onto the database. The results of any of the querying methods always reflect the current state of the database, not the state when the filtering was created.
 
 ### Freezing
-By default JpaActiveSets are always evaluated against the db _every_ time you use a method. You might want to freeze the results, in which case these are for you.
+Perhaps you want to freeze the results for the current request? These are for you.
 
     Set<Article> frozenSet = articles.frozen();
     List<Article> frozenList = articles.frozenList();
