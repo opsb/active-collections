@@ -124,6 +124,7 @@ They just work. You don't have to worry about telling JPA that they are time bas
 #### Collections as parameters using ?
 They also just work. JPA will not normally allow you to use Collections as parameters when you're using the ? syntax. It does however work with named parameters. Behind the scenes JpaActiveSet actually converts all ?s into named parameters so you're able to use Collections as parameters with the ? syntax.
 
+
 ### Logging
 The logging framework is log4j. By setting the logger level for com.googlecode.activecollections.JpaActiveSet you can view the jpa queries as they're executed.
 
@@ -151,6 +152,42 @@ By default JpaActiveSets are always evaluated against the db _every_ time you us
     SortedSet<Article> frozenSortedSet = articles.frozenSortedSet();
     Set<Article> orderedSet = articles.frozenOrderedSet();
   
+### Testing    
+#### Mocking JpaActiveSets for testing
+Mockito is your friend here, it allows you to do "deep stubbing". This means you can define expectations for chains in one go.
+
+    Articles mockArticles = deepMock(Articles.class);
+    when(mockArticles.publishedBetween(startDate,endDate).beginningWith("P").frozen())
+      .thenReturn(asSet(article1, article2));
+
+and this is the implementation for the deepMock method
+
+    public class MockitoUtil {
+        public static <T> T deepMock(Class<T> clazz) {
+                return Mockito.mock(clazz, new DeepAnswer());
+        }
+    }
+
+    class DeepAnswer implements Answer<Object> {
+        private static final long serialVersionUID = -6926328908792880098L;
+
+        private final HashMap<Class<?>, Object> mocks = new HashMap<Class<?>, Object>();
+
+        public Object answer(InvocationOnMock invocation) throws Throwable {
+            Class<?> clz = invocation.getMethod().getReturnType();
+            if (clz.isPrimitive()) {
+                    return null;
+            }
+            if (mocks.containsKey(clz)) {
+                    return mocks.get(clz);
+            } else {
+                    Object mock = Mockito.mock(clz, this);
+                    mocks.put(clz, mock);
+                    return mock;
+            }
+        }
+    }  
+  
 ### Gotchas
 #### Dependencies missing after filtering
 When chaining you need to ensure that any dependencies are copied across to the new copy that get's created(each chained method call results in a new JpaActiveSet being created). Here's an example, note how authors are copied across. 
@@ -171,6 +208,7 @@ When chaining you need to ensure that any dependencies are copied across to the 
         }
         
     }
+
 
   
 ### TODO - pretty self explanatory though
