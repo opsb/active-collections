@@ -209,7 +209,10 @@ When chaining you need to ensure that any dependencies are copied across to the 
         
     }
 
+#### AOP advice lost in chains
+When you chain calls with a JpaActiveSet it creates a new clone of the class for each step. Because these clones aren't managed by spring they don't have any aop functionality mixed in. JpaTemplate is used for all queries though so queries will still be run inside transactions. 
 
+Load time weaving - the solution to this issue is to use load time weaving. Once you've configured this in spring all of the objects in a chain will have the correct aop advice.
   
 ### TODO - pretty self explanatory though
     Articles distinctArticles = articles.distinct();
