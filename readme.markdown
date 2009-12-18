@@ -118,6 +118,25 @@ Note that you can add as many conditions as you like and then just chain them up
       ...
     }
 
+#### Joins
+TODO
+
+#### custom select
+TODO
+
+#### all/none
+sometimes you want to return all/none depending on a condition
+
+    public Articles publishedSince(Date startDate) {
+      if (startDate == null) return all();
+      ...
+    }
+    
+    public Articles inCategories(Set<Category> categories) {
+      if (categories == null || categories.isEmpty()) return none();
+      ...
+    }
+
 #### Dates and Calendars as parameters
 They just work. You don't have to worry about telling JPA that they are time based parameters, JpaActiveSet takes care of it for you.
 
@@ -248,5 +267,3 @@ Load time weaving - the solution to this issue is to use load time weaving. Once
 ### TODO - pretty self explanatory though
     Articles distinctArticles = articles.distinct();
     Articles articlesInList = articles.in(asList(article1, article2))
-    Articles all = articles.all();
-    Articles empty = articles.none();  
