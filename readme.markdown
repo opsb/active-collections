@@ -165,7 +165,7 @@ Once you do this you'll see that the query is made to the database. So what's tr
       // end of for loop body
     }
     
-The crucial line is the first one, that call to .iterator() is what triggers the query to the database. Each time iterator() is called the database is queried again. All of the querying methods on a JpaActiveSet behave in the same way. It's important to understand this, consider the following.
+It's the call to .iterator() is what triggers the query to the database. Each time .iterator() is called the database is queried again. All of the querying methods on a JpaActiveSet behave in the same way. It's important to understand this, consider the following.
 
     Articles filtered = articles.beginningWith("P").publishedThisWeek();
     
@@ -180,7 +180,7 @@ The crucial line is the first one, that call to .iterator() is what triggers the
     1 == filtered.total();
     2 == articles.total();
     
-The crucial point here is that JpaActiveSets are always proxies onto the database. The results of any of the querying methods always reflect the current state of the database, not the state when the filtered JpaActiveSet was created.
+The filtered set always contains all of the articles that match it's criteria.
 
 ### Freezing
 Perhaps you want to freeze the results for the current request? These are for you.
