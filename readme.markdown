@@ -43,8 +43,8 @@ Got an Article object with JPA mappings? Let's create an active set for it.
     articles.add(article);
 
 ### Count
-    1 == articles.count();
-    1 == articles.size(); // Takes paging into account to conform to Set contract i.e. pagesize determines maximum possible result from this method. Normally you'll want to use count().
+    1 == articles.total();
+    1 == articles.size(); // Takes paging into account to conform to Set contract i.e. pagesize determines maximum possible result from this method. Normally you'll want to use total().
     false == articles.isEmpty();
     
 ### Exists?
