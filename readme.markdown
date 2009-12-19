@@ -83,7 +83,7 @@ Notice that many of these methods return an object of type Articles. This allows
     Articles orderedByNamePageOne = articles.orderedBy("name DESC").pagesOf(20).page(1)
 
 ### Filtering
-active-collections allows you to define custom filtering criteria, let's extend our Article implementation. We're going to take advantage of the where(jpaFragment, param1, param2, ...) method. JpaActiveSet makes an alias available for you so that you can just refer to the entity easily. The convention is that the alias is the lowercase name of the entity, in this example "article".
+active-collections allows you to define custom filtering criteria, let's extend our Articles implementation. We're going to take advantage of the where(jpaFragment, param1, param2, ...) method. JpaActiveSet makes an alias available for you so that you can just refer to the entity easily. The convention is that the alias is the lowercase name of the entity, in this example "article".
 
     public class Articles extends JpaActiveSet<Article> {
 
@@ -143,7 +143,7 @@ They just work. You don't have to worry about telling JPA that they are time bas
 #### Collections as parameters using ?
 They also just work. JPA will not normally allow you to use Collections as parameters when you're using the ? syntax. It does however work with named parameters. Behind the scenes JpaActiveSet actually converts all ?s into named parameters so you're able to use Collections as parameters with the ? syntax.
 
-### Philosophy and evaluation strategy - JpaActiveSets are proxies onto database tables
+### JpaActiveSets are proxies onto database tables ###
 If you've been checking your log you'll find that a call such as 
 
     Articles orderedByNamePageOne = articles.orderedBy("name DESC").pagesOf(20).page(1)
@@ -165,15 +165,22 @@ Once you do this you'll see that the query is made to the database. So what's tr
       // end of for loop body
     }
     
-The crucial line is the first one, that call to .iterator() is what triggers the query to the database. All of the querying methods on a JpaActiveSet behave in the same way. It's important to understand this, consider the following.
+The crucial line is the first one, that call to .iterator() is what triggers the query to the database. Each time iterator() is called the database is queried again. All of the querying methods on a JpaActiveSet behave in the same way. It's important to understand this, consider the following.
 
     Articles filtered = articles.beginningWith("P").publishedThisWeek();
     
     0 == filtered.total();
+    0 == articles.total();
+    
     articles.add(articlePublishedThisWeekBeginningWithP);
     1 == filtered.total();
+    1 == articles.total();
     
-The crucial point here is that JpaActiveSets are always proxies onto the database. The results of any of the querying methods always reflect the current state of the database, not the state when the filtering was created.
+    articles.add(articlePublishedLastWeek);
+    1 == filtered.total();
+    2 == articles.total();
+    
+The crucial point here is that JpaActiveSets are always proxies onto the database. The results of any of the querying methods always reflect the current state of the database, not the state when the filtered JpaActiveSet was created.
 
 ### Freezing
 Perhaps you want to freeze the results for the current request? These are for you.
