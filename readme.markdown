@@ -125,14 +125,14 @@ Perhaps you want to include conditions on associated entities.
       return join("article.tags tag").where("tag.name = ?", tagName);
     }
 
-#### custom select
+#### Custom select
 Maybe you only want distinct entities.
 
   public Articles distinct() {
     return select("distinct article";
   }
   
-### distinct
+#### Distinct
 Distinct is actually already available on JpaActiveSet
 
     articles.distinct();

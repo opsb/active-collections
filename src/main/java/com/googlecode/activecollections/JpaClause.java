@@ -16,12 +16,6 @@ public class JpaClause {
 	
 	public JpaClause() {
 	}
-	
-	public JpaClause(String jpa, Map<String, Object> namedParams, Object ... positionalParams) {
-		this.jpa = jpa;
-		this.namedParams = namedParams;
-		this.positionalParams = Arrays.asList(positionalParams);
-	}
 
 	public JpaClause(String jpa, Object ... positionalParams) {
 		this.jpa = jpa;
