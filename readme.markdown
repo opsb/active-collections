@@ -119,10 +119,23 @@ Note that you can add as many conditions as you like and then just chain them up
     }
 
 #### Joins
-TODO
+Perhaps you want to include conditions on associated entities.
+
+    public Articles withTag(String tagName) {
+      return join("article.tags tag").where("tag.name = ?", tagName);
+    }
 
 #### custom select
-TODO
+Maybe you only want distinct entities.
+
+  public Articles distinct() {
+    return select("distinct article";
+  }
+  
+### distinct
+Distinct is actually already available on JpaActiveSet
+
+    articles.distinct();
 
 #### all/none
 sometimes you want to return all/none depending on a condition
