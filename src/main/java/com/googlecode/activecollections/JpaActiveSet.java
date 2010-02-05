@@ -38,6 +38,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.googlecode.activecollections.examples.Address;
+
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
 
@@ -57,13 +59,13 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private List<String> orderClauses = new ArrayList<String>();
 
+	private List<String> joinsClauses = new ArrayList<String>();
+
 	protected EntityManagerFactory entityManagerFactory;
 
 	private JpaDaoSupport jpaDaoSupport;
 
 	private Integer pageSize = DEFAULT_PAGE_SIZE;
-
-	private List<String> joinsClauses = new ArrayList<String>();
 
 	private String fromClause;
 
@@ -719,5 +721,13 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	protected Logger getLogger() {
 		return logger;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
+		JpaActiveSet<T> copy = copy();
+		copy.joinsClauses.addAll(activeSet.joinsClauses);
+		copy.conditionsClauses.addAll(activeSet.conditionsClauses);
+		return (E)copy;
 	}
 }
