@@ -510,6 +510,10 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) where(new JpaClause(conditionsClause, params));
 
 	}
+	
+	public <E extends JpaActiveSet<T>> E and(String conditionsClause, Object... params) {
+		return (E)where(conditionsClause, params);
+	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
@@ -524,6 +528,11 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E and(JpaClause clause) {
+		return (E)where(clause);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
 		
 		JpaActiveSet<T> copy = copy();
@@ -532,6 +541,12 @@ public class JpaActiveSet<T> implements Set<T> {
 		
 		return (E)copy;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <F, E extends JpaActiveSet<T>> E and(JpaActiveSet<F> activeSet) {
+		return (E)where(activeSet);
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E ignoring(JpaClause ignoredClause) {
