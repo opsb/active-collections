@@ -121,9 +121,31 @@ Note that you can add as many conditions as you like and then just chain them up
 #### Joins
 Perhaps you want to include conditions on associated entities.
 
-    public Articles withTag(String tagName) {
-      return join("article.tags tag").where("tag.name = ?", tagName);
+	public class Articles {
+		
+		...
+		
+	    public Articles withTag(String tagName) {
+	      return join("article.tags tag").where("tag.name = ?", tagName);
+	    }
+    
     }
+    
+   	Set<Article> newsAboutIphone = articles.withTag("iphone");
+    
+You can also use other JpaActiveSets as criteria
+	
+	public class Articles {
+	 	
+	 	...
+	 	
+	    public Articles where(Tags tags) {
+	        return join("article.tags tag").where(tags);
+	    }
+	    
+    }
+    
+	Set<Article> articlesWithTagsBegin = articles.where(tags.like("B%"));
 
 #### Custom select
 Maybe you only want distinct entities.
