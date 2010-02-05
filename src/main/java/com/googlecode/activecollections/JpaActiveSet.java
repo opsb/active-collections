@@ -511,6 +511,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E and(String conditionsClause, Object... params) {
 		return (E)where(conditionsClause, params);
 	}
@@ -712,7 +713,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		return where(getReferenceName() + " in (?)", staleEntities);
 	}
 
-	protected String getReferenceName() {
+	public String getReferenceName() {
 		return clazz.getSimpleName().toLowerCase();
 	}
 
