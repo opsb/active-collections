@@ -38,8 +38,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.googlecode.activecollections.examples.Address;
-
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
 
@@ -518,14 +516,21 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull(clause, "Clause was null");
 		Assert.notNull(this.conditionsClauses, "Conditions clauses are null");
 		
-		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
-		combinedConditions.add(clause);
-
 		JpaActiveSet<T> copy = copy();
-		copy.conditionsClauses = combinedConditions;
+		copy.conditionsClauses.add(clause);
 
 		return (E) copy;
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
+		
+		JpaActiveSet<T> copy = copy();
+		copy.joinsClauses.addAll(activeSet.joinsClauses);
+		copy.conditionsClauses.addAll(activeSet.conditionsClauses);
+		
+		return (E)copy;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -723,11 +728,4 @@ public class JpaActiveSet<T> implements Set<T> {
 		return logger;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
-		JpaActiveSet<T> copy = copy();
-		copy.joinsClauses.addAll(activeSet.joinsClauses);
-		copy.conditionsClauses.addAll(activeSet.conditionsClauses);
-		return (E)copy;
-	}
 }
