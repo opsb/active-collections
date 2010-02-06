@@ -7,7 +7,7 @@ public class PersonStubs {
 	}
 	
 	public static Person peter() {
-		return new Person("Peter");
+		return new Person("Peter", new Address("The Strand", 59));
 	}
 	
 	public static Person mark() {

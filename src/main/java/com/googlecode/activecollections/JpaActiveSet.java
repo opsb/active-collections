@@ -57,13 +57,13 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private List<String> orderClauses = new ArrayList<String>();
 
+	private List<String> joinsClauses = new ArrayList<String>();
+
 	protected EntityManagerFactory entityManagerFactory;
 
 	private JpaDaoSupport jpaDaoSupport;
 
 	private Integer pageSize = DEFAULT_PAGE_SIZE;
-
-	private List<String> joinsClauses = new ArrayList<String>();
 
 	private String fromClause;
 
@@ -510,21 +510,44 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (E) where(new JpaClause(conditionsClause, params));
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E and(String conditionsClause, Object... params) {
+		return (E)where(conditionsClause, params);
+	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
 		Assert.notNull(clause, "Clause was null");
 		Assert.notNull(this.conditionsClauses, "Conditions clauses are null");
 		
-		List<JpaClause> combinedConditions = new ArrayList<JpaClause>(this.conditionsClauses);
-		combinedConditions.add(clause);
-
 		JpaActiveSet<T> copy = copy();
-		copy.conditionsClauses = combinedConditions;
+		copy.conditionsClauses.add(clause);
 
 		return (E) copy;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E and(JpaClause clause) {
+		return (E)where(clause);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
+		
+		JpaActiveSet<T> copy = copy();
+		copy.joinsClauses.addAll(activeSet.joinsClauses);
+		copy.conditionsClauses.addAll(activeSet.conditionsClauses);
+		
+		return (E)copy;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <F, E extends JpaActiveSet<T>> E and(JpaActiveSet<F> activeSet) {
+		return (E)where(activeSet);
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E ignoring(JpaClause ignoredClause) {
@@ -690,7 +713,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		return where(getReferenceName() + " in (?)", staleEntities);
 	}
 
-	protected String getReferenceName() {
+	public String getReferenceName() {
 		return clazz.getSimpleName().toLowerCase();
 	}
 
@@ -720,4 +743,5 @@ public class JpaActiveSet<T> implements Set<T> {
 	protected Logger getLogger() {
 		return logger;
 	}
+
 }

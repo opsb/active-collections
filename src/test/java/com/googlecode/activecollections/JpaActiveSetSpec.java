@@ -227,9 +227,12 @@ public class JpaActiveSetSpec {
 
 		private JpaActiveSet<Person> people;
 
+		private JpaActiveSet<Address> addresses;
+		
 		@Before
 		public void context() {
 			people = new JpaPeople(entityManagerFactory);
+			addresses = new JpaActiveSet<Address>(Address.class, entityManagerFactory);
 			people.add(PETER);
 			people.add(PAUL);
 		}
@@ -310,6 +313,14 @@ public class JpaActiveSetSpec {
 		@Test
 		public void shouldBeAbleToOrderDescending() {
 			assertThat(people.orderedBy("name desc"), OrderMatcher.orderedSameAs(asList(PETER, PAUL)));
+		}
+		
+		@Test
+		public void shouldJoinToOtherActiveSets() {
+			Address petersAddress = PETER.getAddresses().get(0);
+			assertTrue(people.join("person.addresses address")
+							 .where(addresses.in(petersAddress))
+							 .contains(PETER));
 		}
 		
 	}

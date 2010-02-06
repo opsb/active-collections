@@ -121,9 +121,31 @@ Note that you can add as many conditions as you like and then just chain them up
 #### Joins
 Perhaps you want to include conditions on associated entities.
 
-    public Articles withTag(String tagName) {
-      return join("article.tags tag").where("tag.name = ?", tagName);
+	public class Articles {
+		
+		...
+		
+	    public Articles withTag(String tagName) {
+	      return join("article.tags tag").where("tag.name = ?", tagName);
+	    }
+    
     }
+    
+   	Set<Article> newsAboutIphone = articles.withTag("iphone");
+    
+You can also use other JpaActiveSets as criteria
+	
+	public class Articles {
+	 	
+	 	...
+	 	
+	    public Articles where(Tags tags) {
+	        return join("article.tags tag").where(tags);
+	    }
+	    
+    }
+    
+	Set<Article> articlesWithTagsBegin = articles.where(tags.like("B%"));
 
 #### Custom select
 Maybe you only want distinct entities.
@@ -153,16 +175,20 @@ sometimes you want to return all/none depending on a condition
 #### Dates and Calendars as parameters
 They just work. You don't have to worry about telling JPA that they are time based parameters, JpaActiveSet takes care of it for you.
 
-    public Article publishedSince(Date startDate) {
+    public Articles publishedSince(Date startDate) {
       return where("startDate > ?", startDate);
     }
     
-    public Article publishedSince(Calendar startDate) {
+    public Articles publishedSince(Calendar startDate) {
       return where("startDate > ?", startDate);
     }
 
 #### Collections as parameters using ?
 They also just work. JPA will not normally allow you to use Collections as parameters when you're using the ? syntax. It does however work with named parameters. Behind the scenes JpaActiveSet actually converts all ?s into named parameters so you're able to use Collections as parameters with the ? syntax.
+
+    public Articles withAny(Set<Tag> tags) {
+      return where("article.tag in (?)", tags);
+    }
 
 ### JpaActiveSets are proxies onto database tables ###
 If you've been checking your log you'll find that a call such as 

@@ -56,6 +56,11 @@ public class Person {
 		this.addresses = addresses;
 	}
 	
+	public Person(String name, Address address) {
+		this(name);
+		addresses.add(address);
+	}
+
 	public Long getId() {
 		return id;
 	}
