@@ -39,7 +39,7 @@ Got an Article object with JPA mappings? Let's create an active set for it.
     Articles articles = new Articles(entityManagerFactory);
 
 ### Saving articles
-    Article article = new Article("US drones hacked by Iraqi insurgents");
+    Article article = new Article("Sir Ian McKellen: Cowboys and Hobbits");
     articles.add(article);
 
 ### Count
@@ -129,7 +129,7 @@ Perhaps you want to include conditions on associated entities.
 Maybe you only want distinct entities.
 
   public Articles distinct() {
-    return select("distinct article";
+    return select("distinct article");
   }
   
 #### Distinct
@@ -152,6 +152,14 @@ sometimes you want to return all/none depending on a condition
 
 #### Dates and Calendars as parameters
 They just work. You don't have to worry about telling JPA that they are time based parameters, JpaActiveSet takes care of it for you.
+
+    public Article publishedSince(Date startDate) {
+      return where("startDate > ?", startDate);
+    }
+    
+    public Article publishedSince(Calendar startDate) {
+      return where("startDate > ?", startDate);
+    }
 
 #### Collections as parameters using ?
 They also just work. JPA will not normally allow you to use Collections as parameters when you're using the ? syntax. It does however work with named parameters. Behind the scenes JpaActiveSet actually converts all ?s into named parameters so you're able to use Collections as parameters with the ? syntax.
