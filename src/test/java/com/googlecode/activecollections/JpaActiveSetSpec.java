@@ -296,11 +296,11 @@ public class JpaActiveSetSpec {
 			assertTrue(people.isEmpty());
 		}
 		
-		@Test
-		public void canRetainAll() {
-			people.retainAll( asList(PAUL) );	
-			assertTrue(people.contains(PAUL));
-		}
+//		@Test
+//		public void canRetainAll() {
+//			people.retainAll( asList(PAUL) );	
+//			assertTrue(people.contains(PAUL));
+//		}
 		
 		
 		@Test
