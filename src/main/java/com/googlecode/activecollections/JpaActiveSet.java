@@ -108,7 +108,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <E extends JpaActiveSet<T>> E copy() {
+	protected <E extends JpaActiveSet<T>> E copy() {
 		try {
 			Constructor<E> constructor = (Constructor<E>) getClass().getDeclaredConstructor();
 			constructor.setAccessible(true);
