@@ -52,6 +52,8 @@ public class JpaActiveSet<T> implements Set<T> {
 	private Class<T> clazz;
 
 	private Integer page;
+	
+	private Integer numberOfItems;
 
 	private List<JpaClause> conditionsClauses = new ArrayList<JpaClause>();
 
@@ -340,9 +342,27 @@ public class JpaActiveSet<T> implements Set<T> {
 		}
 	}
 	
-	private void addPagingTo(Query query, int maxResults) {
-		if (isPaged()) {
-			query.setFirstResult((page - 1) * pageSize);
+	private void addLimitsTo(Query query) {
+		
+		Integer start = null;
+		Integer maxResults = null; 
+		
+		if (isLimited()) {
+			int page = this.page == null ? 1 : this.page;
+			
+			start = (page - 1) * pageSize;
+			maxResults = pageSize;
+
+			if (numberOfItems != null) {
+				if (numberOfItems < maxResults) {
+					maxResults = numberOfItems;
+				}
+			}
+			
+			Assert.isTrue(start >= 0, "Invalid start row: " + start );
+			Assert.isTrue(maxResults > 0, "Invalid max results: " + maxResults);
+			
+			query.setFirstResult(start);
 			query.setMaxResults(maxResults);
 		}
 	}
@@ -415,24 +435,20 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public T first() {
-		Collection<T> all = getAll(1);
+		Collection<T> all = items(1);
 		return all.isEmpty() ? null : all.iterator().next();
-	}
-
-	private List<T> getAll() {
-		return getAll(pageSize);
 	}
 	
 	protected void afterLoad(T entity) {}
 
 	@SuppressWarnings("unchecked")
-	private List<T> getAll(final int maxResults) {
+	public List<T> getAll() {
 		List<T> all = getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getAllQuery());
 				addParamsTo(query);
-				addPagingTo(query, maxResults);
+				addLimitsTo(query);
 
 				return query.getResultList();
 			}
@@ -444,8 +460,8 @@ public class JpaActiveSet<T> implements Set<T> {
 		
 	}
 
-	private boolean isPaged() {
-		return page != null;
+	private boolean isLimited() {
+		return page != null || numberOfItems != null;
 	}
 
 	public <AT> AT[] toArray(AT[] a) {
@@ -634,6 +650,13 @@ public class JpaActiveSet<T> implements Set<T> {
 		JpaActiveSet<T> copy = copy();
 		copy.pageSize = pageSize;
 		copy.page = page == null ? 1 : page;
+		return (E) copy;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <E extends JpaActiveSet<T>> E items(Integer numberOfItems) {
+		JpaActiveSet<T> copy = copy();
+		copy.numberOfItems = numberOfItems;
 		return (E) copy;
 	}
 

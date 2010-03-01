@@ -406,6 +406,11 @@ public class JpaActiveSetSpec {
 		}
 		
 		@Test
+		public void shouldLimitToFirst() {
+			assertThat(filteredPeople.first(), equalTo(paul));
+		}
+		
+		@Test
 		public void iteratorIsFiltered() {
 			
 			Set<Person> people = new HashSet<Person>(filteredPeople);
@@ -523,7 +528,7 @@ public class JpaActiveSetSpec {
 				people.add(peter());
 			}
 			
-			pagedPeople = people.pagesOf(10);
+			pagedPeople = people.orderedBy("person.name ASC").pagesOf(10);
 			
 		}
 		
