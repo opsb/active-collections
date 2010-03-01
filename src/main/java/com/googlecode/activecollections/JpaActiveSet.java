@@ -71,6 +71,8 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private String selectClause;
 
+	private boolean distinct = false;
+
 	protected JpaActiveSet() {
 	}
 
@@ -139,6 +141,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		copy.clazz = clazz;
 		copy.fromClause = fromClause;
 		copy.selectClause = selectClause;
+		copy.distinct = distinct;
 		copy.conditionsClauses = new ArrayList<JpaClause>(this.conditionsClauses);
 		copy.orderClauses = new ArrayList<String>(orderClauses);
 		copy.joinsClauses = new ArrayList<String>(joinsClauses);
@@ -152,12 +155,19 @@ public class JpaActiveSet<T> implements Set<T> {
 		return "from " + (fromClause == null ? getEntityName() + " " + getReferenceName() : fromClause);
 	}
 
+	private String getSelectFragmentWithOptionsApplied() {
+		String selectFragment = this.selectClause;
+		if (selectFragment == null) selectFragment = getReferenceName();
+		if (distinct) selectFragment = "distinct " + selectFragment;
+		return selectFragment;
+	}
+	
 	private String getSelectClause() {
-		return "select " + (selectClause == null ? getReferenceName() : selectClause);
+		return "select " + getSelectFragmentWithOptionsApplied();
 	}
 
 	private String getSelectCountClause() {
-		return "select count(" + (selectClause == null ? getReferenceName() : selectClause) + ")";
+		return "select count(" + getSelectFragmentWithOptionsApplied() + ")";
 	}
 
 	private String getTablesClause() {
@@ -760,7 +770,9 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E distinct() {
-		return (E)select("distinct " + getReferenceName());
+		JpaActiveSet<T> copy = copy();
+		copy.distinct  = true;
+		return (E)copy;
 	}
 	
 	protected Logger getLogger() {

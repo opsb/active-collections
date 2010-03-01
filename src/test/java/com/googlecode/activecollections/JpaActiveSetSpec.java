@@ -348,6 +348,30 @@ public class JpaActiveSetSpec {
 	
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
 	@SpringApplicationContext("spring-context.xml")
+	public static class SeveralPeopleWithSameNames {
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+		
+		private JpaPeople people;
+		
+		@Before
+		public void context() {
+			people = new JpaPeople(entityManagerFactory);
+			for(int i = 0; i < 10; i++) {
+				people.add(jim());
+			}
+		}
+		
+		@Test
+		public void shouldReduceToDistinctNames() {
+			assertThat(people.distinct().<String>reduceToList("name"), hasItems("Jim"));
+		}
+		
+	}
+	
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
 	public static class WithSeveralPeopleFilteredByNameLikeFoo {
 		
 		private static final Date START_DATE = new GregorianCalendar(2004, 3, 3).getTime();
