@@ -435,7 +435,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public T first() {
-		Collection<T> all = items(1);
+		Collection<T> all = first(1);
 		return all.isEmpty() ? null : all.iterator().next();
 	}
 	
@@ -654,7 +654,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E items(Integer numberOfItems) {
+	public <E extends JpaActiveSet<T>> E first(Integer numberOfItems) {
 		JpaActiveSet<T> copy = copy();
 		copy.numberOfItems = numberOfItems;
 		return (E) copy;
