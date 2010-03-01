@@ -437,11 +437,11 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public Iterator<T> iterator() {
-		return getAll().iterator();
+		return getAllWithCallbacks().iterator();
 	}
 
 	public Object[] toArray() {
-		return getAll().toArray();
+		return getAllWithCallbacks().toArray();
 	}
 
 	public T first() {
@@ -451,9 +451,16 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	protected void afterLoad(T entity) {}
 
+	private List<T> getAllWithCallbacks() {
+		List<T> all = getAll();		
+		for(T entity : all) afterLoad(entity);
+		return all;
+		
+	}
+	
 	@SuppressWarnings("unchecked")
-	private List<T> getAll() {
-		List<T> all = getJpaTemplate().executeFind(new JpaCallback() {
+	private <E> List<E> getAll() {
+		return (List<E>)getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
 				Query query = em.createQuery(getAllQuery());
@@ -464,10 +471,6 @@ public class JpaActiveSet<T> implements Set<T> {
 			}
 
 		});
-		
-		for(T entity : all) afterLoad(entity);
-		return all;
-		
 	}
 
 	private boolean isLimited() {
@@ -475,7 +478,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public <AT> AT[] toArray(AT[] a) {
-		return getAll().toArray(a);
+		return getAllWithCallbacks().toArray(a);
 	}
 
 	public boolean remove(final Object entity) {
@@ -777,6 +780,14 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	protected Logger getLogger() {
 		return logger;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E> List<E> reduceToList(String property) {
+		JpaActiveSet<T> copy = copy();
+		copy.selectClause = getReferenceName() + "." + property;
+		
+		return (List<E>)copy.getAll();
 	}
 
 }

@@ -12,6 +12,7 @@ import static com.googlecode.activecollections.examples.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -321,6 +322,12 @@ public class JpaActiveSetSpec {
 			assertTrue(people.join("person.addresses address")
 							 .where(addresses.in(petersAddress))
 							 .contains(PETER));
+		}
+		
+		
+		@Test
+		public void shouldReduceToName() {
+			assertThat(people.<String>reduceToList("name"), hasItems("Peter","Paul"));
 		}
 		
 	}
