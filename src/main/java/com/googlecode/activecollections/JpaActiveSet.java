@@ -442,7 +442,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	protected void afterLoad(T entity) {}
 
 	@SuppressWarnings("unchecked")
-	public List<T> getAll() {
+	private List<T> getAll() {
 		List<T> all = getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
