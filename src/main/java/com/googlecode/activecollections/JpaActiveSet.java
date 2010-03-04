@@ -413,7 +413,7 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	public int size() {
 		int total = total();
-		return total > pageSize ? pageSize : total;
+		return total > pageSize && isLimited() ? pageSize : total;
 	}
 	
 	public int total() {
