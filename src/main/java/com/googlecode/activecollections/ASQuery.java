@@ -35,14 +35,28 @@ public class ASQuery {
 	
 	private String entityName;
 	
-	public ASQuery(Logger logger, String referenceName, String entityName) {
+	private ASQuery(){}
+	
+	public ASQuery(Logger logger, String referenceName, String entityName, String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, List<String> orderClauses) {
 		this.logger = logger;
 		this.referenceName = referenceName;
 		this.entityName = entityName;
+		
+		
+		this.selectClause = selectClause;
+		this.fromClause = fromClause;
+		this.joinsClauses = joins;
+		this.conditionsClauses = conditions;
+		if(orderClauses != null) this.orderClauses = orderClauses;
 	}
 	
 	public ASQuery copy() {
-		ASQuery copy = new ASQuery(logger, referenceName, entityName);
+		ASQuery copy = new ASQuery();
+		
+		copy.logger = logger;
+		copy.referenceName = referenceName;
+		copy.entityName = entityName;
+		
 		copy.fromClause = fromClause;
 		copy.selectClause = selectClause;
 		copy.distinct = distinct;

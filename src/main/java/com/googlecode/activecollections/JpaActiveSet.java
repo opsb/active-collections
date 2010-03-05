@@ -57,8 +57,9 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	protected JpaActiveSet() {
 	}
-
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory) {
+	
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory,
+			String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, List<String> orderClauses) {
 		
 		Assert.notNull(entityManagerFactory,
 		"Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
@@ -71,9 +72,18 @@ public class JpaActiveSet<T> implements Set<T> {
 			}
 		};
 		this.idField = getIdField(clazz);
+
+		asQuery = new ASQuery(logger, getReferenceName(), getEntityName(), selectClause, fromClause, joins, conditions, orderClauses);
 		
-		asQuery = new ASQuery(logger, getReferenceName(), getEntityName());
-		
+	}
+	
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, List<String> orderClauses,
+			JpaClause... conditions) {
+		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClauses);
+	}
+
+	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
+		this(clazz, entityManagerFactory, new ArrayList<String>());
 	}
 	
 	public boolean add(T entity) {
