@@ -7,15 +7,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,7 +21,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.log4j.Logger;
@@ -36,14 +31,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
 
 	private Logger logger = Logger.getLogger(JpaActiveSet.class);
-
-	private static final String NO_ORDER_SPECIFIED = "";
 
 	private static final Integer DEFAULT_PAGE_SIZE = 25;
 
@@ -52,32 +44,21 @@ public class JpaActiveSet<T> implements Set<T> {
 	private Class<T> clazz;
 
 	private Integer page;
+
+	private Integer pageSize = DEFAULT_PAGE_SIZE;
 	
 	private Integer numberOfItems;
 
-	private List<JpaClause> conditionsClauses = new ArrayList<JpaClause>();
-
-	private List<String> orderClauses = new ArrayList<String>();
-
-	private List<String> joinsClauses = new ArrayList<String>();
-
-	protected EntityManagerFactory entityManagerFactory;
-
 	private JpaDaoSupport jpaDaoSupport;
 
-	private Integer pageSize = DEFAULT_PAGE_SIZE;
-
-	private String fromClause;
-
-	private String selectClause;
-
-	private boolean distinct = false;
+	protected EntityManagerFactory entityManagerFactory;
+	
+	private ASQuery asQuery;
 
 	protected JpaActiveSet() {
 	}
 
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory,
-			String selectClause, String fromClause, List<String> joins, List<JpaClause> conditions, List<String> orderClauses) {
+	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory) {
 		
 		Assert.notNull(entityManagerFactory,
 		"Can not create a JpaActiveSet without an EntityManagerFactory, was given null");
@@ -89,28 +70,111 @@ public class JpaActiveSet<T> implements Set<T> {
 				setEntityManagerFactory(entityManagerFactory);
 			}
 		};
-		this.selectClause = selectClause;
-		this.fromClause = fromClause;
-		this.joinsClauses = joins;
-		this.conditionsClauses = conditions;
-		if(orderClauses != null) this.orderClauses = orderClauses;
 		this.idField = getIdField(clazz);
+		
+		asQuery = new ASQuery(logger, getReferenceName(), getEntityName());
 		
 	}
 	
-	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, List<String> orderClauses,
-			JpaClause... conditions) {
-		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClauses);
-	}
-
-	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		this(clazz, entityManagerFactory, new ArrayList<String>());
+	public boolean add(T entity) {
+		if (isPersisted(entity)) {
+			getJpaTemplate().merge(entity);
+			return false;
+		} else {
+			getJpaTemplate().persist(entity);
+			return true;
+		}
 	}
 	
-	public static <T extends Object> JpaActiveSet<T> activeSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
-		return new JpaActiveSet<T>(clazz, entityManagerFactory);
+	public boolean addAll(Collection<? extends T> entities) {
+		
+		for (T entity : entities) {
+			add(entity);
+		}
+		
+		boolean hasAddedEntities = !entities.isEmpty();
+		
+		return hasAddedEntities;
+	}
+	
+	public boolean addAll(T... entities) {
+		return addAll(Arrays.asList(entities));
+	}
+	
+	public void clear() {
+		removeAll(this);
+	}
+	
+	public boolean containsAll(final Collection<? extends Object> entities) {
+
+		if (entities == null || entities.isEmpty())
+			return false;
+
+		for (Object entity : entities) {
+			if (!isPersisted(entity))
+				return false;
+		}
+
+		return (Boolean) getJpaTemplate().execute(new JpaCallback() {
+
+			public Object doInJpa(EntityManager em) throws PersistenceException {
+				
+				ASQuery withDefaults = always().asQuery;
+				
+				Query query = em.createQuery(withDefaults.getContainsAllQuery());
+				query.setParameter("entities", entities);
+				withDefaults.addParamsTo(query);
+				
+				Long withMatchingIds = (Long) query.getSingleResult();
+
+				return withMatchingIds == entities.size();
+			}
+
+		});
+
 	}
 
+	public boolean contains(Object entity) {
+		return containsAll(Arrays.asList(entity));
+	}
+
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+
+	public int size() {
+		int total = total();
+		return total > pageSize && isLimited() ? pageSize : total;
+	}
+	
+	public int total() {
+		return ((Long)getJpaTemplate().execute(new JpaCallback() {
+
+			public Object doInJpa(EntityManager em) throws PersistenceException {
+				
+				ASQuery withDefaults = always().asQuery;
+				
+				Query query = em.createQuery(withDefaults.getSizeQuery());
+				withDefaults.addParamsTo(query);
+				return query.getSingleResult();
+			}
+
+		})).intValue();
+	}
+
+	public Iterator<T> iterator() {
+		return getAllWithCallbacks().iterator();
+	}
+
+	public Object[] toArray() {
+		return getAllWithCallbacks().toArray();
+	}
+
+	public T first() {
+		Collection<T> all = first(1);
+		return all.isEmpty() ? null : all.iterator().next();
+	}	
+	
 	@SuppressWarnings("unchecked")
 	protected <E extends JpaActiveSet<T>> E copy() {
 		try {
@@ -136,125 +200,16 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	private <E extends JpaActiveSet<T>> void addMeta(E copy) {
 
-		Assert.notNull(this.conditionsClauses);
-		
 		copy.clazz = clazz;
-		copy.fromClause = fromClause;
-		copy.selectClause = selectClause;
-		copy.distinct = distinct;
-		copy.conditionsClauses = new ArrayList<JpaClause>(this.conditionsClauses);
-		copy.orderClauses = new ArrayList<String>(orderClauses);
-		copy.joinsClauses = new ArrayList<String>(joinsClauses);
 		copy.idField = getIdField(clazz);
 		copy.page = page;
 		copy.pageSize = pageSize;
+		copy.asQuery = asQuery.copy();
 
-	}
-
-	private String getFromClause() {
-		return "from " + (fromClause == null ? getEntityName() + " " + getReferenceName() : fromClause);
-	}
-
-	private String getSelectFragmentWithOptionsApplied() {
-		String selectFragment = this.selectClause;
-		if (selectFragment == null) selectFragment = getReferenceName();
-		if (distinct) selectFragment = "distinct " + selectFragment;
-		return selectFragment;
-	}
-	
-	private String getSelectClause() {
-		return "select " + getSelectFragmentWithOptionsApplied();
-	}
-
-	private String getSelectCountClause() {
-		return "select count(" + getSelectFragmentWithOptionsApplied() + ")";
-	}
-
-	private String getTablesClause() {
-		return getFromClause() + getJoinClause();
-	}
-
-	private String getDeleteClause() {
-		return "delete";
-	}
-
-	private String getRetainAllQuery() {
-		String retainAllQuery = buildQuery(getDeleteClause(), " where " + getReferenceName() + " not in (:entities)"
-				+ getAndClause(), NO_ORDER_SPECIFIED);
-		getLogger().debug("retainAll query: " + retainAllQuery);
-		return retainAllQuery;
-	}
-
-	private String getContainsAllQuery() {
-		String containsAllQuery = buildQuery(getSelectCountClause(), " where " + getReferenceName() + " in (:entities)"
-				+ getAndClause(), NO_ORDER_SPECIFIED);
-		getLogger().debug("containsAll query: " + containsAllQuery);
-		return containsAllQuery;
-	}
-
-	private String getAllQuery() {
-		String getAllQuery = buildQuery(getSelectClause(), getWhereClause(), getOrderClause());
-		getLogger().debug("getAll query: " + getAllQuery);
-		return getAllQuery;
-	}
-
-	private String getSizeQuery() {
-		String sizeQuery = buildQuery(getSelectCountClause(), getWhereClause(), NO_ORDER_SPECIFIED);
-		getLogger().debug("size query: " + sizeQuery);
-		return sizeQuery;
-	}
-
-	private String getOrderClause() {
-		if(orderClauses == null || orderClauses.size() <= 0) return "";
-		
-		StringBuilder orderClause = new StringBuilder(" order by ");
-		orderClause.append( StringUtils.collectionToCommaDelimitedString(orderClauses) );
-		
-		return orderClause.toString();
-	}
-
-	private String buildQuery(String operationClause, String whereClause, String orderClause) {
-		return namePositionalParameters(operationClause + " " + getTablesClause() + whereClause + orderClause);
 	}
 
 	private String getEntityName() {
 		return clazz.getSimpleName();
-	}
-
-	private String getJoinClause() {
-		if (joinsClauses.isEmpty())
-			return "";
-		return " " + StringUtils.collectionToDelimitedString(joinsClauses, " ");
-	}
-
-	private String getWhereClause() {
-		return enabledConditionsClauses().isEmpty() ? "" : " where " + getConditionsClause();
-	}
-
-	private List<JpaClause> enabledConditionsClauses() {
-		List<JpaClause> enabled = new ArrayList<JpaClause>();
-		for(JpaClause clause : conditionsClauses) {
-			if (clause.isEnabled()) {
-				enabled.add(clause);
-			}
-		}
-		return enabled;
-	}
-	
-	private String getConditionsClause() {
-
-		List<String> clauses = new ArrayList<String>();
-
-		for (JpaClause clause : enabledConditionsClauses()) {
-				clauses.add(clause.getJpa());
-		}
-
-		return StringUtils.collectionToDelimitedString(clauses, " and ");
-
-	}
-
-	private String getAndClause() {
-		return enabledConditionsClauses().isEmpty() ? "" : " and " + getConditionsClause();
 	}
 
 	protected JpaTemplate getJpaTemplate() {
@@ -291,67 +246,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		return getId(entity) != null;
 	}
 
-	public boolean add(T entity) {
-		if (isPersisted(entity)) {
-			getJpaTemplate().merge(entity);
-			return false;
-		} else {
-			getJpaTemplate().persist(entity);
-			return true;
-		}
-	}
 
-	public boolean addAll(Collection<? extends T> entities) {
-
-		for (T entity : entities) {
-			add(entity);
-		}
-
-		boolean hasAddedEntities = !entities.isEmpty();
-
-		return hasAddedEntities;
-	}
-
-	public boolean addAll(T... entities) {
-		return addAll(Arrays.asList(entities));
-	}
-
-	public void clear() {
-		removeAll(this);
-	}
-
-	private Map<String, Object> buildParams() {
-		Map<String, Object> params = new HashMap<String, Object>();
-		for (JpaClause conditionClause : enabledConditionsClauses()) {
-			params.putAll(conditionClause.getNamedParams());
-			for (Object param : conditionClause.getPositionalParams()) {
-				addUniqueParam(params, param);
-			}
-		}
-		getLogger().debug("Using params: " + params);
-		return params;
-	}
-
-	private void addUniqueParam(Map<String, Object> params, Object param) {
-		String name = "param" + params.size();
-		params.put(name, param);
-	}
-
-	private void addParamsTo(Query query) {
-		for (Map.Entry<String, Object> entry : buildParams().entrySet()) {
-			Object value = entry.getValue();
-			if (value instanceof Date) {
-				query.setParameter(entry.getKey(), (Date) value, TemporalType.TIMESTAMP);
-			} else if (value instanceof Calendar) {
-				query.setParameter(entry.getKey(), (Calendar) value, TemporalType.TIMESTAMP);
-			} else if (value instanceof DynaParam) {
-				query.setParameter(entry.getKey(), ((DynaParam) value).getValue());
-			} else {
-				query.setParameter(entry.getKey(), value);
-			}
-		}
-	}
-	
 	private void addLimitsTo(Query query) {
 		
 		Integer start = null;
@@ -377,77 +272,7 @@ public class JpaActiveSet<T> implements Set<T> {
 		}
 	}
 
-	public boolean containsAll(final Collection<? extends Object> entities) {
-
-		if (entities == null || entities.isEmpty())
-			return false;
-
-		for (Object entity : entities) {
-			if (!isPersisted(entity))
-				return false;
-		}
-
-		return (Boolean) getJpaTemplate().execute(new JpaCallback() {
-
-			public Object doInJpa(EntityManager em) throws PersistenceException {
-
-				Query query = em.createQuery(getContainsAllQuery());
-				query.setParameter("entities", entities);
-				addParamsTo(query);
-				Long withMatchingIds = (Long) query.getSingleResult();
-
-				return withMatchingIds == entities.size();
-			}
-
-		});
-
-	}
-
-	public boolean contains(Object entity) {
-		return containsAll(Arrays.asList(entity));
-	}
-
-	public boolean isEmpty() {
-		return size() == 0;
-	}
-
-	public int size() {
-		int total = total();
-		return total > pageSize && isLimited() ? pageSize : total;
-	}
 	
-	public int total() {
-		return ((Long)getJpaTemplate().execute(new JpaCallback() {
-
-			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(getSizeQuery());
-				addParamsTo(query);
-				return query.getSingleResult();
-			}
-
-		})).intValue();
-	}
-
-	private String namePositionalParameters(String query) {
-		int index = 0;
-		while (query.contains("?")) {
-			query = query.replaceFirst("\\?", ":param" + index++);
-		}
-		return query;
-	}
-
-	public Iterator<T> iterator() {
-		return getAllWithCallbacks().iterator();
-	}
-
-	public Object[] toArray() {
-		return getAllWithCallbacks().toArray();
-	}
-
-	public T first() {
-		Collection<T> all = first(1);
-		return all.isEmpty() ? null : all.iterator().next();
-	}
 	
 	protected void afterLoad(T entity) {}
 
@@ -463,8 +288,11 @@ public class JpaActiveSet<T> implements Set<T> {
 		return (List<E>)getJpaTemplate().executeFind(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(getAllQuery());
-				addParamsTo(query);
+				
+				ASQuery withDefaults = always().asQuery;
+				
+				Query query = em.createQuery(withDefaults.getAllQuery());
+				withDefaults.addParamsTo(query);
 				addLimitsTo(query);
 
 				return query.getResultList();
@@ -519,7 +347,8 @@ public class JpaActiveSet<T> implements Set<T> {
 		getJpaTemplate().execute(new JpaCallback() {
 
 			public Object doInJpa(EntityManager em) throws PersistenceException {
-				Query query = em.createQuery(getRetainAllQuery());
+				
+				Query query = em.createQuery(asQuery.getRetainAllQuery());
 				query.setParameter("entities", entities);
 				query.executeUpdate();
 				return null;
@@ -548,10 +377,9 @@ public class JpaActiveSet<T> implements Set<T> {
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E where(JpaClause clause) {
 		Assert.notNull(clause, "Clause was null");
-		Assert.notNull(this.conditionsClauses, "Conditions clauses are null");
 		
 		JpaActiveSet<T> copy = copy();
-		copy.conditionsClauses.add(clause);
+		copy.asQuery.add(clause);
 
 		return (E) copy;
 
@@ -566,8 +394,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	public <F, E extends JpaActiveSet<T>> E where(JpaActiveSet<F> activeSet) {
 		
 		JpaActiveSet<T> copy = copy();
-		copy.joinsClauses.addAll(activeSet.joinsClauses);
-		copy.conditionsClauses.addAll(activeSet.conditionsClauses);
+		copy.asQuery.merge(activeSet.asQuery);
 		
 		return (E)copy;
 	}
@@ -583,39 +410,44 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull( ignoredClause, "Clause to ignore was null" );
 		
 		JpaActiveSet<T> copy = copy();
-		if ( copy.conditionsClauses.remove(ignoredClause) == false) {
-			throw new IllegalArgumentException("This clause was not found: " + ignoredClause + " Actual clauses: " + conditionsClauses);
+		if ( copy.asQuery.remove(ignoredClause) == false) {
+			throw new IllegalArgumentException("This clause was not found: " + ignoredClause);
 		}
 		return (E)copy;
 	}
 
-	private JpaActiveSet<T> buildJoinClause(String joinType, String joinClause) {
-		JpaActiveSet<T> copy = copy();
-		copy.joinsClauses = new ArrayList<String>(this.joinsClauses);
-		copy.joinsClauses.add(joinType + " " + joinClause);
-		
-		return copy;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E join(String join) {
+		
 		Assert.notNull(join, "Join was null");
-
-		return (E) buildJoinClause("join", join);
+		
+		JpaActiveSet<T> copy = copy();
+		copy.asQuery.join("join", join);
+		
+		return (E) copy;
+		
 	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E leftOuterJoin(String join) {
+		
 		Assert.notNull(join, "Left outer join was null");
+		
+		JpaActiveSet<T> copy = copy();
+		copy.asQuery.join("left outer join", join);
+		
+		return (E) copy;
 
-		return (E) buildJoinClause("left outer join" , join);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E rightOuterJoin(String join) {
 		Assert.notNull(join, "Right outer join was null");
 
-		return (E) buildJoinClause("right outer join", join);
+		JpaActiveSet<T> copy = copy();
+		copy.asQuery.join("right outer join ", join);
+		
+		return (E) copy;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -624,8 +456,8 @@ public class JpaActiveSet<T> implements Set<T> {
 		Assert.notNull(orderClause, "Order clause was null");
 		
 		JpaActiveSet<T> copy = copy();
-		
-		copy.orderClauses.add(orderClause);
+		copy.asQuery.addOrderClause(orderClause);
+
 		return (E) copy;
 	}
 
@@ -760,34 +592,39 @@ public class JpaActiveSet<T> implements Set<T> {
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E from(String from) {
 		JpaActiveSet<T> copy = copy();
-		copy.fromClause = from;
+		copy.asQuery.from(from);
+		
 		return (E) copy;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E select(String select) {
 		JpaActiveSet<T> copy = copy();
-		copy.selectClause = select;
+		copy.asQuery.select(select);
+		
 		return (E) copy;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <E extends JpaActiveSet<T>> E distinct() {
 		JpaActiveSet<T> copy = copy();
-		copy.distinct  = true;
+		copy.asQuery.distinct();
 		return (E)copy;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <E> List<E> reduceToList(String property) {
+		JpaActiveSet<T> copy = copy().select(getReferenceName() + "." + property);
+		
+		return (List<E>)copy.getAll();
 	}
 	
 	protected Logger getLogger() {
 		return logger;
 	}
-
-	@SuppressWarnings("unchecked")
-	public <E> List<E> reduceToList(String property) {
-		JpaActiveSet<T> copy = copy();
-		copy.selectClause = getReferenceName() + "." + property;
-		
-		return (List<E>)copy.getAll();
+	
+	protected <E extends JpaActiveSet<T>> E always() {
+		return (E)this;
 	}
 
 }
