@@ -199,8 +199,8 @@ Often you don't want to bring back the whole object and just want a property
     public List<String> allTitles() {
       return this.<String>reduceToList("title");
     }
-    
-Now
+   
+now
 
     for(String title : articles.allTitles()) {
       System.out.println(title);
