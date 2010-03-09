@@ -150,9 +150,9 @@ You can also use other JpaActiveSets as criteria
 #### Custom select
 Maybe you only want distinct entities.
 
-  public Articles distinct() {
-    return select("distinct article");
-  }
+    public Articles distinct() {
+      return select("distinct article");
+    }
   
 #### Default conditions  
 You want your articles to be always ordered by title?
