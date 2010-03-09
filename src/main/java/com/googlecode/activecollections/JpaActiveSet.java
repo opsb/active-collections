@@ -212,7 +212,8 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	protected <E extends JpaActiveSet<T>> void afterCopy(E copy) {
-		for(Field field : getClass().getDeclaredFields()) {
+		
+		for(Field field : getDeclaredFieldsFor()) {
 			try {
 				if (!isStaticOrFinal(field)) {
 					field.setAccessible(true);
@@ -226,6 +227,21 @@ public class JpaActiveSet<T> implements Set<T> {
 		}
 	}
 	
+	private Set<Field> getDeclaredFieldsFor() {
+		Set<Field> fields = new HashSet<Field>();
+		
+		Class<?> clazz = getClass();
+		boolean hasMoreSubclassesOfJpaActiveSet = JpaActiveSet.class != clazz;
+		
+		while(hasMoreSubclassesOfJpaActiveSet) {
+			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+			clazz = clazz.getSuperclass();
+			hasMoreSubclassesOfJpaActiveSet = JpaActiveSet.class != clazz;
+		}
+		
+		return fields;
+	}
+
 	private boolean isStaticOrFinal(Field field) {
 		int modifiers = field.getModifiers();
 		return Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers);
