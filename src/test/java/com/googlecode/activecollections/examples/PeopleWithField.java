@@ -12,6 +12,7 @@ public class PeopleWithField extends JpaActiveSet<Person>{
 	
 	public PeopleWithField(String name, EntityManagerFactory entityManagerFactory) {
 		super(Person.class, entityManagerFactory);
+		this.name = name;
 	}
 	
 	public PeopleWithField withNameLike(String name) {

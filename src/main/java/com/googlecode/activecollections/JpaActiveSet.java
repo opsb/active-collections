@@ -1,6 +1,5 @@
 package com.googlecode.activecollections;
 
-import static java.util.Arrays.asList;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -15,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javassist.Modifier;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -80,9 +81,13 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, List<String> orderClauses,
 			JpaClause... conditions) {
-		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), Arrays.asList(conditions), orderClauses);
+		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), asList(conditions), orderClauses);
 	}
 
+	private static <X> List<X> asList(X ... items) {
+		return new ArrayList<X>(Arrays.asList(items));
+	}
+	
 	public JpaActiveSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
 		this(clazz, entityManagerFactory, new ArrayList<String>());
 	}
@@ -197,7 +202,7 @@ public class JpaActiveSet<T> implements Set<T> {
 			copy.jpaDaoSupport = jpaDaoSupport;
 
 			addMeta(copy);
-			afterCopy(this, copy);
+			afterCopy(copy);
 
 			return copy;
 		} catch (Exception e) {
@@ -206,16 +211,24 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	}
 
-	protected <E extends JpaActiveSet<T>> void afterCopy(E original, E copy) {
+	protected <E extends JpaActiveSet<T>> void afterCopy(E copy) {
 		for(Field field : getClass().getDeclaredFields()) {
 			try {
-				Object value = field.get(original);
-				field.set(copy, value);
+				if (!isStaticOrFinal(field)) {
+					field.setAccessible(true);
+					Object value = field.get(this);
+					field.set(copy, value);
+				}
 			}
 			catch(Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+	
+	private boolean isStaticOrFinal(Field field) {
+		int modifiers = field.getModifiers();
+		return Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers);
 	}
 
 	private <E extends JpaActiveSet<T>> void addMeta(E copy) {
