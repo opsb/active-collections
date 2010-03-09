@@ -154,6 +154,27 @@ Maybe you only want distinct entities.
     return select("distinct article");
   }
   
+#### Default conditions  
+You want your articles to be always ordered by title?
+
+    public Articles always() {
+      return orderedBy("article.title ASC");
+    }  
+  
+Now when you do
+
+    for(Article article : articles) {
+        System.out.println(article.getTitle());
+    }
+  
+or with a condition
+
+    for(Article article : articles.publishedToday()) {
+      System.out.println(article.getTitle());
+    }
+  
+They'll be listed alphabetical order
+  
 #### Distinct
 Distinct is actually already available on JpaActiveSet
 
