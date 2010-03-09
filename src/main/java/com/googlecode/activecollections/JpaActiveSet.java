@@ -79,6 +79,10 @@ public class JpaActiveSet<T> implements Set<T> {
 		
 	}
 	
+	public static <T extends Object> JpaActiveSet<T> activeSet(Class<T> clazz, EntityManagerFactory entityManagerFactory) {
+		return new JpaActiveSet<T>(clazz, entityManagerFactory);
+	}
+	
 	public JpaActiveSet(Class<T> clazz, final EntityManagerFactory entityManagerFactory, List<String> orderClauses,
 			JpaClause... conditions) {
 		this(clazz, entityManagerFactory, null, null, new ArrayList<String>(), asList(conditions), orderClauses);
