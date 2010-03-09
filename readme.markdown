@@ -192,6 +192,22 @@ sometimes you want to return all/none depending on a condition
       if (categories == null || categories.isEmpty()) return none();
       ...
     }
+    
+#### Query for a property
+Often you don't want to bring back the whole object and just want a property
+
+    public List<String> allTitles() {
+      return this.<String>reduceToList("title");
+    }
+    
+Now
+
+    for(String title : articles.allTitles()) {
+      System.out.println(title);
+    }
+    
+will print all article titles without incurring the cost of loading the Article objects.    
+
 
 #### Dates and Calendars as parameters
 They just work. You don't have to worry about telling JPA that they are time based parameters, JpaActiveSet takes care of it for you.
