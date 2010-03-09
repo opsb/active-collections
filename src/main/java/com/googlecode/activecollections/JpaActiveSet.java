@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
@@ -196,7 +197,7 @@ public class JpaActiveSet<T> implements Set<T> {
 			copy.jpaDaoSupport = jpaDaoSupport;
 
 			addMeta(copy);
-			afterCopy(copy);
+			afterCopy(this, copy);
 
 			return copy;
 		} catch (Exception e) {
@@ -205,7 +206,16 @@ public class JpaActiveSet<T> implements Set<T> {
 
 	}
 
-	protected <E extends JpaActiveSet<T>> void afterCopy(E copy) {
+	protected <E extends JpaActiveSet<T>> void afterCopy(E original, E copy) {
+		for(Field field : getClass().getDeclaredFields()) {
+			try {
+				Object value = field.get(original);
+				field.set(copy, value);
+			}
+			catch(Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	private <E extends JpaActiveSet<T>> void addMeta(E copy) {

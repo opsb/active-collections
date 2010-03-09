@@ -39,6 +39,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import com.googlecode.activecollections.examples.Address;
 import com.googlecode.activecollections.examples.JpaPeople;
 import com.googlecode.activecollections.examples.PeopleBeginningWithP;
+import com.googlecode.activecollections.examples.PeopleWithField;
 import com.googlecode.activecollections.examples.Person;
 import com.googlecode.activecollections.matchers.OrderMatcher;
 
@@ -211,6 +212,34 @@ public class JpaActiveSetSpec {
 			assertThat(people.size(), equalTo(2));
 		}
 
+	}
+	
+	@RunWith(UnitilsJUnit4TestClassRunner.class)
+	@SpringApplicationContext("spring-context.xml")
+	public static class WithField {
+
+		private static final String NAME = "people";
+		
+		private final Person PAUL = paul();
+		private final Person PETER = peter();
+		
+		@SpringBeanByType
+		private EntityManagerFactory entityManagerFactory;
+
+		private PeopleWithField people;
+		
+		@Before
+		public void context() {
+			people = new PeopleWithField("people", entityManagerFactory);
+			people.add(PETER);
+			people.add(PAUL);
+		}
+		
+		@Test
+		public void shouldStillHaveFieldsAfterApplyingACondition() {
+			PeopleWithField peopleWithNameLikePeter = people.withNameLike(PETER.getName());
+			assertThat(peopleWithNameLikePeter.getName(), equalTo(NAME));
+		}
 	}
 	
 	@RunWith(UnitilsJUnit4TestClassRunner.class)
