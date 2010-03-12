@@ -357,6 +357,17 @@ public class JpaActiveSetSpec {
 			assertThat(people.<String>reduceToList("name"), hasItems("Peter","Paul"));
 		}
 		
+		@Test
+		public void shouldFindMaxValueForProperty() {
+			
+			Long expectedMax = 0L;
+			for(Person person : people) {
+				expectedMax = expectedMax < person.getId() ? person.getId() : expectedMax;
+			}
+			
+			assertThat(people.<Long>max("id"), equalTo(expectedMax));
+		}
+		
 	}
 	
 	@RunWith(UnitilsJUnit4TestClassRunner.class)

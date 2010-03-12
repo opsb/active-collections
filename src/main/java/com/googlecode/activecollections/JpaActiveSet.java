@@ -552,7 +552,7 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <E extends JpaActiveSet<T>> E first(Integer numberOfItems) {
+	private <E extends JpaActiveSet<T>> E first(Integer numberOfItems) {
 		JpaActiveSet<T> copy = copy();
 		copy.numberOfItems = numberOfItems;
 		return (E) copy;
@@ -678,6 +678,12 @@ public class JpaActiveSet<T> implements Set<T> {
 	
 	protected <E extends JpaActiveSet<T>> E always() {
 		return (E)this;
+	}
+
+	public <X> X max(String property) {
+		List<X> results = copy().select("max(" + getReferenceName() + "." + property + ")").getAll();
+		X max = results.iterator().next();
+		return max;
 	}
 
 }
