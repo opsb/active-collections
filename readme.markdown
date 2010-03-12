@@ -206,6 +206,19 @@ now
       System.out.println(title);
     }
     
+#### Max value
+You can get the max value for a property using
+
+    public Integer getMaxAge() {
+    	return this.<Integer>max("age");	
+    }
+    
+or perhaps
+
+	public Long getMaxId() {
+		return this.<Long>max("id");
+	}
+    
 will print all article titles without incurring the cost of loading the Article objects.    
 
 
