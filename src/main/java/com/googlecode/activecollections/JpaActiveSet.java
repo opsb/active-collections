@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 @Transactional(propagation = Propagation.REQUIRED)
 public class JpaActiveSet<T> implements Set<T> {
@@ -610,6 +609,8 @@ public class JpaActiveSet<T> implements Set<T> {
 	}
 
 	public List<T> frozenList() {
+		int size = this.size();
+		if(size == 0) return new ArrayList<T>();
 		return new ArrayList<T>(this);
 	}
 
