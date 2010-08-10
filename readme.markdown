@@ -1,3 +1,7 @@
+Introduction
+------------
+ActiveCollections is an attempt to create a java API that behaves similarly to the ActiveRecord in rails. It sits on top of JPA so you can map your objects as usual with annotations. It allows you to easily create repositories for each of your JPA classes and then filter methods to query these. As a bonus the repositories implement the Set interface so that you can drop them in anywhere a Set can go.
+
 Install
 -------
 Update your maven settings with
