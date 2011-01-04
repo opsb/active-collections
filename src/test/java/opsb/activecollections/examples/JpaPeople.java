@@ -1,8 +1,8 @@
-package com.googlecode.activecollections.examples;
+package opsb.activecollections.examples;
 
 import javax.persistence.EntityManagerFactory;
 
-import com.googlecode.activecollections.JpaActiveSet;
+import opsb.activecollections.JpaActiveSet;
 
 
 public class JpaPeople extends JpaActiveSet<Person> {

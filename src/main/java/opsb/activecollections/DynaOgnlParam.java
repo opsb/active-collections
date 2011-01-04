@@ -1,4 +1,4 @@
-package com.googlecode.activecollections;
+package opsb.activecollections;
 
 import ognl.Ognl;
 import ognl.OgnlException;

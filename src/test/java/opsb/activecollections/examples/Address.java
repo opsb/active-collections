@@ -1,4 +1,4 @@
-package com.googlecode.activecollections.examples;
+package opsb.activecollections.examples;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

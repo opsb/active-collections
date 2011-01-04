@@ -19,7 +19,7 @@ Update your maven settings with
 and
 
     <dependency>
-        <groupId>com.googlecode</groupId>
+        <groupId>opsb</groupId>
         <artifactId>active-collections</artifactId>
         <version>0.18-SNAPSHOT</version>
     </dependency>
@@ -292,7 +292,7 @@ Perhaps you want to freeze the results for the current request? These are for yo
     Set<Article> orderedSet = articles.frozenOrderedSet();
 
 ### Logging
-The logging framework is log4j. By setting the logger level for com.googlecode.activecollections.JpaActiveSet you can view the jpa queries as they're executed.
+The logging framework is log4j. By setting the logger level for opsb.activecollections.JpaActiveSet you can view the jpa queries as they're executed.
 
 Sometimes you only want logging from one of your JpaActiveSets. Taking Articles as an example
 

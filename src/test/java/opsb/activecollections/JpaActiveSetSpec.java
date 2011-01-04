@@ -1,14 +1,14 @@
-package com.googlecode.activecollections;
+package opsb.activecollections;
 
-import static com.googlecode.activecollections.examples.PersonStubs.gabrial;
-import static com.googlecode.activecollections.examples.PersonStubs.james;
-import static com.googlecode.activecollections.examples.PersonStubs.jim;
-import static com.googlecode.activecollections.examples.PersonStubs.jim_carrey;
-import static com.googlecode.activecollections.examples.PersonStubs.jim_cramer;
-import static com.googlecode.activecollections.examples.PersonStubs.mark;
-import static com.googlecode.activecollections.examples.PersonStubs.paul;
-import static com.googlecode.activecollections.examples.PersonStubs.pearson;
-import static com.googlecode.activecollections.examples.PersonStubs.peter;
+import static opsb.activecollections.examples.PersonStubs.gabrial;
+import static opsb.activecollections.examples.PersonStubs.james;
+import static opsb.activecollections.examples.PersonStubs.jim;
+import static opsb.activecollections.examples.PersonStubs.jim_carrey;
+import static opsb.activecollections.examples.PersonStubs.jim_cramer;
+import static opsb.activecollections.examples.PersonStubs.mark;
+import static opsb.activecollections.examples.PersonStubs.paul;
+import static opsb.activecollections.examples.PersonStubs.pearson;
+import static opsb.activecollections.examples.PersonStubs.peter;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -36,12 +36,12 @@ import org.unitils.UnitilsJUnit4TestClassRunner;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-import com.googlecode.activecollections.examples.Address;
-import com.googlecode.activecollections.examples.JpaPeople;
-import com.googlecode.activecollections.examples.PeopleBeginningWithP;
-import com.googlecode.activecollections.examples.PeopleWithField;
-import com.googlecode.activecollections.examples.Person;
-import com.googlecode.activecollections.matchers.OrderMatcher;
+import opsb.activecollections.examples.Address;
+import opsb.activecollections.examples.JpaPeople;
+import opsb.activecollections.examples.PeopleBeginningWithP;
+import opsb.activecollections.examples.PeopleWithField;
+import opsb.activecollections.examples.Person;
+import opsb.activecollections.matchers.OrderMatcher;
 
 @RunWith(Enclosed.class)
 public class JpaActiveSetSpec {

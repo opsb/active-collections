@@ -1,4 +1,4 @@
-package com.googlecode.activecollections;
+package opsb.activecollections;
 
 public interface DynaParam {
 

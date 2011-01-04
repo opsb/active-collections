@@ -1,4 +1,4 @@
-package com.googlecode.activecollections.examples;
+package opsb.activecollections.examples;
 
 import java.util.ArrayList;
 import java.util.Date;

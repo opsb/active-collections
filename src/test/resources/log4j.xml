@@ -10,7 +10,7 @@
 		</layout>
 	</appender>
 	
-	<logger name="com.googlecode.activecollections">
+	<logger name="opsb.activecollections">
 		<level value="DEBUG" />
 	</logger>
 

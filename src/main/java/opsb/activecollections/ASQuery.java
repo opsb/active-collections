@@ -1,4 +1,4 @@
-package com.googlecode.activecollections;
+package opsb.activecollections;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.googlecode.activecollections.matchers;
+package opsb.activecollections.matchers;
 
 import java.util.Collection;
 import java.util.Iterator;
