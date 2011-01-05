@@ -6,22 +6,10 @@ Install
 -------
 Update your maven settings with
 
-    <repository>
-        <id>opsbreleases</id>
-        <name>opsb-releases</name>
-        <url>http://opsb.co.uk/nexus/content/repositories/releases/</url>
-    </repository>
-    <repository>
-        <id>opsbsnapshots</id>
-        <name>opsb-snapshots</name>
-        <url>http://opsb.co.uk/nexus/content/repositories/snapshots/</url>
-    </repository>    
-and
-
     <dependency>
         <groupId>opsb</groupId>
         <artifactId>active-collections</artifactId>
-        <version>0.18-SNAPSHOT</version>
+        <version>0.18</version>
     </dependency>
 
 Usage
