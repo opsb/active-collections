@@ -3,7 +3,7 @@
 	<groupId>uk.co.opsb</groupId>
 	<artifactId>active-collections</artifactId>
 	<packaging>jar</packaging>
-	<version>0.18</version>
+	<version>0.19-SNAPSHOT</version>
 	<name>active-collections</name>
   <url>http://maven.apache.org</url>
   <description>active_record style api for JPA</description>
